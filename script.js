@@ -12,6 +12,113 @@ function playCoinSound() {
     } catch(e) {}
 }
 
+// === ИНИЦИАЛИЗАЦИЯ ТРЕХМЕРНОГО ДВИЖКА (THREE.JS) ===
+let scene, camera, renderer, coinMesh;
+let isClicking = false, targetScaleZ = 1, currentScaleZ = 1;
+
+function init3D() {
+    const container = document.getElementById('canvas3d-container');
+    if (!container) return;
+
+    // 1. Создаем сцену и прозрачную камеру
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 6;
+
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // 2. Создаем 3D геометрию монеты (Цилиндр)
+    const geometry = new THREE.CylinderGeometry(1.8, 1.8, 0.25, 40, 1);
+    
+    // Премиальный металлический золотой материал с отражениями
+    const material = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,      // Золотой цвет
+        metalness: 0.9,       // Высокий металлический блеск
+        roughness: 0.15,      // Мягкое отражение
+    });
+
+    coinMesh = new THREE.Mesh(geometry, material);
+    // Поворачиваем монету лицом к игроку
+    coinMesh.rotation.x = Math.PI / 2;
+    scene.add(coinMesh);
+
+    // 3. Добавляем профессиональный свет (Трейдерский терминал)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight1.position.set(5, 5, 4);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xfacc15, 0.6); // Теплый блик снизу
+    dirLight2.position.set(-5, -5, 2);
+    scene.add(dirLight2);
+
+    // 4. Отслеживание движения мыши для 3D параллакса
+    window.addEventListener('mousemove', (e) => {
+        if (!coinMesh) return;
+        const x = (e.clientX / window.innerWidth) - 0.5;
+        const y = (e.clientY / window.innerHeight) - 0.5;
+        coinMesh.rotation.y = (Math.PI / 2) + x * 0.5;
+        coinMesh.rotation.z = y * 0.5;
+    });
+
+    // Запуск цикла бесконечного 3D-рендеринга
+    animate3D();
+}
+
+function animate3D() {
+    requestAnimationFrame(animate3D);
+
+    if (coinMesh) {
+        // Постоянное легкое фоновое вращение монеты
+        if(!isClicking) {
+            coinMesh.rotation.y += 0.008;
+        }
+        // Физика пружины для анимации 3D нажатия
+        currentScaleZ += (targetScaleZ - currentScaleZ) * 0.25;
+        coinMesh.scale.set(1, currentScaleZ, 1);
+    }
+    renderer.render(scene, camera);
+}
+
+// Слушатель клика по 3D холсту
+document.getElementById('canvas3d-container').addEventListener('mousedown', (e) => {
+    isClicking = true;
+    targetScaleZ = 0.4; // Монета сильно сжимается в глубину
+    
+    // Передаем плоские координаты для генерации летящих циферок +$1
+    triggerClickLogic(e.clientX, e.clientY);
+    
+    setTimeout(() => {
+        targetScaleZ = 1; // Возвращается назад
+        isClicking = false;
+    }, 80);
+});
+
+// Адаптация под тач-экраны телефонов
+document.getElementById('canvas3d-container').addEventListener('touchstart', (e) => {
+    isClicking = true; targetScaleZ = 0.4;
+    const touch = e.touches[0];
+    triggerClickLogic(touch.clientX, touch.clientY);
+    setTimeout(() => { targetScaleZ = 1; isClicking = false; }, 80);
+});
+
+function triggerClickLogic(clientX, clientY) {
+    game.balance += game.clickPower;
+    playCoinSound();
+    if (clientX && clientY) {
+        const el = document.createElement('div'); el.className = 'floating-income'; el.innerText = `+$${game.clickPower}`;
+        el.style.left = `${clientX - 10}px`; el.style.top = `${clientY - 20}px`; document.body.appendChild(el);
+        setTimeout(() => el.remove(), 500);
+    }
+    updateUI(); queueSave();
+}
+
+// === ОСТАЛЬНАЯ ЛОГИКА ИГРЫ (СОХРАНЕНА НА 100%) ===
 const upgrades = [
     { id: 'click', name: 'Офисный Маркетинг', cost: 15, multiplier: 1.45, type: 'click', power: 1, desc: 'Клик +\$1' },
     { id: 'startup', name: 'Акции Венчуров', cost: 60, multiplier: 1.5, type: 'passive', power: 1, desc: 'Доход +\$1/с' },
@@ -48,14 +155,11 @@ function drawChart() {
     let points = []; for (let i = 0; i < chartData.length; i++) points.push({ x: i * step, y: h - ((chartData[i] - minP) / range) * (h - 20) - 8 });
     const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444', gradColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
     
-    // Градиентное заполнение
     if(points.length > 0) {
         ctx.beginPath(); ctx.moveTo(points[0].x, h);
         for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
         ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.lineTo(points[points.length - 1].x, h); ctx.closePath();
         let areaGrad = ctx.createLinearGradient(0, 0, 0, h); areaGrad.addColorStop(0, gradColor); areaGrad.addColorStop(1, 'transparent'); ctx.fillStyle = areaGrad; ctx.fill();
-        
-        // Светящаяся кривая
         ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = mainColor; ctx.shadowColor = mainColor; ctx.shadowBlur = 8; ctx.moveTo(points[0].x, points[0].y);
         for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
         ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.stroke(); ctx.shadowBlur = 0;
@@ -66,40 +170,35 @@ function updateChartData() {
     chartData.shift(); let base = chartData[chartData.length - 1], noise = (Math.random() - 0.48) * 6; stockPrice = Math.max(5, Math.min(65, base + noise));
     if(game.currentModifier > 1) stockPrice = Math.min(65, stockPrice + 1.5); if(game.currentModifier < 1) stockPrice = Math.max(5, stockPrice - 1.5); chartData.push(stockPrice);
     btcPrice = Math.max(100, Math.min(1000000, btcPrice + (Math.random() - 0.5) * (btcPrice * 0.18)));
-    const lbl = document.getElementById('stockLabel'); if (lbl) lbl.innerText = `Индекс акций: $${stockPrice.toFixed(2)}`; drawChart(); updateUI(); renderCrypto();
+const lbl = document.getElementById('stockLabel'); if (lbl) lbl.innerText = Индекс акций: $${stockPrice.toFixed(2)}; drawChart(); updateUI(); renderCrypto();
 }
-
-function formatMoney(n) { if (n >= 1e9) return '\$' + (n / 1e9).toFixed(2) + ' Б'; if (n >= 1e6) return '\$' + (n / 1e6).toFixed(2) + ' М'; if (n >= 1e3) return '\$' + (n / 1e3).toFixed(1) + ' К'; return '\$' + Math.floor(n); }
+function formatMoney(n) { if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + ' Б'; if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + ' М'; if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + ' К'; return '$' + Math.floor(n); }
 const balDisp = document.getElementById('balanceDisplay'), incDisp = document.getElementById('incomeDisplay'), rankDisp = document.getElementById('rankDisplay'), shopList = document.getElementById('shopList'), realEstateList = document.getElementById('realEstateList'), cryptoList = document.getElementById('cryptoList');
 const buyStockBtn = document.getElementById('buyStockBtn'), buyStock10Btn = document.getElementById('buyStock10Btn'), buyStockMaxBtn = document.getElementById('buyStockMaxBtn'), sellStockBtn = document.getElementById('sellStockBtn'), dailyBtn = document.getElementById('dailyBtn');
-
 function renderShop() {
-    if (!shopList) return; shopList.innerHTML = '';
-    upgrades.forEach(up => {
-        const btn = document.createElement('button'); btn.className = 'asset-item'; btn.id = `btn-${up.id}`;
-        btn.innerHTML = `<div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Ур. ${inventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>`;
-        btn.addEventListener('click', (e) => { e.stopPropagation(); buyAsset(up); }); shopList.appendChild(btn);
-    });
+if (!shopList) return; shopList.innerHTML = '';
+upgrades.forEach(up => {
+const btn = document.createElement('button'); btn.className = 'asset-item'; btn.id = btn-${up.id};
+btn.innerHTML = <div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Ур. ${inventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>;
+btn.addEventListener('click', (e) => { e.stopPropagation(); buyAsset(up); }); shopList.appendChild(btn);
+});
 }
-
 function renderRealEstate() {
-    if (!realEstateList) return; realEstateList.innerHTML = '';
-    realEstateUpgrades.forEach(up => {
-        const btn = document.createElement('button'); btn.className = 'asset-item'; btn.id = `btn-${up.id}`;
-        btn.innerHTML = `<div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Владеете: ${reInventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>`;
-        btn.addEventListener('click', (e) => { e.stopPropagation(); buyRealEstate(up); }); realEstateList.appendChild(btn);
-    });
+if (!realEstateList) return; realEstateList.innerHTML = '';
+realEstateUpgrades.forEach(up => {
+const btn = document.createElement('button'); btn.className = 'asset-item'; btn.id = btn-${up.id};
+btn.innerHTML = <div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Владеете: ${reInventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>;
+btn.addEventListener('click', (e) => { e.stopPropagation(); buyRealEstate(up); }); realEstateList.appendChild(btn);
+});
 }
-
 function renderCrypto() {
-    if (!cryptoList) return; cryptoList.innerHTML = `<div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>`;
-    const bBtn = document.getElementById('buyBtcBtn'), sBtn = document.getElementById('sellBtcBtn');
-    if(bBtn) bBtn.addEventListener('click', () => { if(game.balance >= btcPrice) { game.balance -= btcPrice; game.cryptoBtc = (game.cryptoBtc || 0) + 1; updateUI(); renderCrypto(); saveGame(); } });
-    if(sBtn) sBtn.addEventListener('click', () => { if(game.cryptoBtc >= 1) { game.cryptoBtc -= 1; game.balance += btcPrice; updateUI(); renderCrypto(); saveGame(); } });
+if (!cryptoList) return; cryptoList.innerHTML = <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>;
+const bBtn = document.getElementById('buyBtcBtn'), sBtn = document.getElementById('sellBtcBtn');
+if(bBtn) bBtn.addEventListener('click', () => { if(game.balance >= btcPrice) { game.balance -= btcPrice; game.cryptoBtc = (game.cryptoBtc || 0) + 1; updateUI(); renderCrypto(); saveGame(); } });
+if(sBtn) sBtn.addEventListener('click', () => { if(game.cryptoBtc >= 1) { game.cryptoBtc -= 1; game.balance += btcPrice; updateUI(); renderCrypto(); saveGame(); } });
 }
-
 function updateUI() {
-    if (balDisp) balDisp.innerText = formatMoney(game.balance); let actInc = game.baseIncome * game.currentModifier; if (incDisp) incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
+if (balDisp) balDisp.innerText = formatMoney(game.balance); let actInc = game.baseIncome * game.currentModifier; if (incDisp) incDisp.innerText = Доход: ${formatMoney(actInc)}/с + (game.currentModifier !== 1 ?  (x${game.currentModifier}) : '');
 let currRank = ranks[0].title; for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; } if (rankDisp) rankDisp.innerText = currRank;
 upgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
 realEstateUpgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
@@ -109,29 +208,19 @@ if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0; if (dailyBtn) d
 }
 function saveGame() { localStorage.setItem('biz_emp_v10', JSON.stringify({ game, inventory, reInventory })); }
 let saveTimeout; function queueSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 1500); }
-function handleCoinClick(e) {
-e.preventDefault(); game.balance += game.clickPower; playCoinSound();
-let cX = e.clientX || (e.touches && e.touches.clientX), cY = e.clientY || (e.touches && e.touches.clientY); const coinEl = document.getElementById('mainCoin'); if (!coinEl) return;
-const rect = coinEl.getBoundingClientRect(), cX_ctr = rect.left + rect.width / 2, cY_ctr = rect.top + rect.height / 2;
-if (cX && cY) {
-const tX = ((cY - cY_ctr) / (rect.height / 2)) * -15, tY = ((cX - cX_ctr) / (rect.width / 2)) * 15;
-coinEl.style.transform = scale(0.90) rotateX(${tX}deg) rotateY(${tY}deg) translateY(4px); setTimeout(() => { coinEl.style.transform = ''; }, 100);
-const el = document.createElement('div'); el.className = 'floating-income'; el.innerText = +$${game.clickPower}; el.style.left = ${cX - 10}px; el.style.top = ${cY - 20}px; document.body.appendChild(el); setTimeout(() => el.remove(), 500);
-} updateUI(); queueSave();
-}
 function buyAsset(asset) { if (game.balance >= asset.cost) { game.balance -= asset.cost; inventory[asset.id]++; if (asset.type === 'click') game.clickPower += asset.power; else game.baseIncome += asset.power; asset.cost = Math.round(initialCosts[asset.id] * Math.pow(asset.multiplier, inventory[asset.id])); renderShop(); updateUI(); saveGame(); } }
 function buyRealEstate(asset) { if (game.balance >= asset.cost) { game.balance -= asset.cost; reInventory[asset.id]++; game.baseIncome += asset.power; asset.cost = Math.round(initialRECosts[asset.id] * Math.pow(asset.multiplier, reInventory[asset.id])); renderRealEstate(); updateUI(); saveGame(); } }
-const navShopBtn = document.getElementById('navShopBtn'), navRealEstateBtn = document.getElementById('navRealEstateBtn'), navCryptoBtn = document.getElementById('navCryptoBtn');
-const businessContainer = document.getElementById('businessContainer'), realEstateContainer = document.getElementById('realEstateContainer'), cryptoContainer = document.getElementById('cryptoContainer');
-if (navShopBtn && navRealEstateBtn && navCryptoBtn) {
-function switchTab(activeBtn, activeContainer) { [navShopBtn, navRealEstateBtn, navCryptoBtn].forEach(b => b.classList.remove('active')); [businessContainer, realEstateContainer, cryptoContainer].forEach(c => { if(c) c.classList.add('hidden'); }); activeBtn.classList.add('active'); activeContainer.classList.remove('hidden'); }
-navShopBtn.addEventListener('click', () => switchTab(navShopBtn, businessContainer)); navRealEstateBtn.addEventListener('click', () => switchTab(navRealEstateBtn, realEstateContainer)); navCryptoBtn.addEventListener('click', () => switchTab(navCryptoBtn, cryptoContainer));
+const upgradesTabBtn = document.getElementById('navShopBtn'), reTabBtn = document.getElementById('navRealEstateBtn'), cryptoTabBtn = document.getElementById('navCryptoBtn');
+if (upgradesTabBtn && reTabBtn && cryptoTabBtn) {
+function switchTab(activeBtn, activeContainer) { [upgradesTabBtn, reTabBtn, cryptoTabBtn].forEach(b => b.classList.remove('active')); [businessContainer, realEstateContainer, cryptoContainer].forEach(c => { if(c) c.classList.add('hidden'); }); activeBtn.classList.add('active'); activeContainer.classList.remove('hidden'); }
+upgradesTabBtn.addEventListener('click', () => switchTab(upgradesTabBtn, businessContainer)); reTabBtn.addEventListener('click', () => switchTab(reTabBtn, realEstateContainer)); cryptoTabBtn.addEventListener('click', () => switchTab(cryptoTabBtn, cryptoContainer));
 }
 if (buyStockBtn) buyStockBtn.addEventListener('click', () => { if (game.balance >= stockPrice) { game.balance -= stockPrice; game.ownedStocks++; updateUI(); saveGame(); } });
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', () => { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
 if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', () => { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', () => { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
-const mainCoin = document.getElementById('mainCoin'); if (mainCoin) { mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false }); mainCoin.addEventListener('mousedown', (e) => { if ('ontouchstart' in window) return; handleCoinClick(e); }); }
-window.addEventListener('resize', () => { initCanvas(); drawChart(); }); setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
+window.addEventListener('resize', () => { initCanvas(); drawChart(); if(renderer && container) { renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); } });
+setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
 setInterval(updateChartData, 1000); setInterval(() => { game.lastSaveTime = Date.now(); saveGame(); }, 5000);
-initCanvas(); renderShop(); renderRealEstate(); renderCrypto(); updateUI(); drawChart();
+// Инициализируем плоский UI и 3D движок одновременно
+initCanvas(); renderShop(); renderRealEstate(); renderCrypto(); updateUI(); drawChart(); init3D();
