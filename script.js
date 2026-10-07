@@ -1,11 +1,10 @@
 const initialCosts = { click: 15, startup: 60, retail: 500, oil: 4000, it: 30000 };
-// Начальные цены для разделов недвижимости
-const initialRECosts = { re_flat: 1200, re_floor: 8500, re_hotel: 75000, re_skyscraper: 650000 };
+// Ошибка исправлена: Название цен и ID теперь совпадают на 100%
+const initialRECosts = { re_flat: 1200, re_floor: 8500, re_hotel: 75000, re_sky: 650000 };
 
 let game = { balance: 0, clickPower: 1, baseIncome: 0, currentModifier: 1, lastSaveTime: Date.now(), ownedStocks: 0, lastDailyTime: 0 };
 let inventory = { click: 0, startup: 0, retail: 0, oil: 0, it: 0 };
-// Слот в инвентаре для сохранения недвижимости
-let reInventory = { re_flat: 0, re_floor: 0, re_hotel: 0, re_skyscraper: 0 };
+let reInventory = { re_flat: 0, re_floor: 0, re_hotel: 0, re_sky: 0 };
 
 let stockPrice = 35;
 const upgrades = [
@@ -16,12 +15,11 @@ const upgrades = [
     { id: 'it', name: 'Нейросети ИИ', class: 'ico-it', cost: 30000, multiplier: 1.7, type: 'passive', power: 400, desc: 'Доход +\$400/с' }
 ];
 
-// Новый список доступной недвижимости
 const realEstateUpgrades = [
     { id: 're_flat', name: 'Смарт-Апартаменты', class: 'ico-flat', cost: 1200, multiplier: 1.4, power: 15, desc: 'Доход +\$15/с' },
-    { id: 're_floor', name: 'Офисный Этаж', class: 'ico-office-floor', cost: 8500, multiplier: 1.45, power: 110, desc: 'Доход +\$110/с' },
+    { id: 're_floor', name: 'Офисный Этаж', class: 'ico-floor', cost: 8500, multiplier: 1.45, power: 110, desc: 'Доход +\$110/с' },
     { id: 're_hotel', name: 'Сеть Хостелов', class: 'ico-hotel', cost: 75000, multiplier: 1.5, power: 950, desc: 'Доход +\$950/с' },
-    { id: 're_skyscraper', name: 'Небоскреб Сити', class: 'ico-skyscraper', cost: 650000, multiplier: 1.6, power: 8200, desc: 'Доход +\$8200/с' }
+    { id: 're_sky', name: 'Небоскреб Сити', class: 'ico-sky', cost: 650000, multiplier: 1.6, power: 8200, desc: 'Доход +\$8200/с' }
 ];
 
 const ranks = [
@@ -153,6 +151,7 @@ function updateUI() {
     let actInc = game.baseIncome * game.currentModifier;
     incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     
+    // Ошибка исправлена: Четкое указание первого ранга по умолчанию
     let currRank = ranks[0].title;
     for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
     rankDisp.innerText = currRank;
@@ -168,7 +167,7 @@ function updateUI() {
     dailyBtn.disabled = !canDaily;
 }
 
-function saveGame() { game.lastSaveTime = Date.now(); localStorage.setItem('biz_emp_v9', JSON.stringify({ game, inventory, reInventory })); }
+function saveGame() { localStorage.setItem('biz_emp_v9', JSON.stringify({ game, inventory, reInventory })); }
 
 let saveTimeout;
 function queueSave() {
@@ -201,7 +200,7 @@ function handleCoinClick(e) {
         el.style.left = `${cX - 10}px`; 
         el.style.top = `${cY - 20}px`; 
         document.body.appendChild(el);
-setTimeout(() => el.remove(), 500);
+        setTimeout(() => el.remove(), 500);
 }
 updateUI();
 queueSave();
@@ -217,27 +216,20 @@ renderShop(); updateUI(); saveGame();
 function buyRealEstate(asset) {
 if (game.balance >= asset.cost) {
 game.balance -= asset.cost; reInventory[asset.id]++;
-game.baseIncome += asset.power; // Недвижимость дает мощный пассивный доход
+game.baseIncome += asset.power;
 asset.cost = Math.round(initialRECosts[asset.id] * Math.pow(asset.multiplier, reInventory[asset.id]));
 renderRealEstate(); updateUI(); saveGame();
 }
 }
-// Логика переключения вкладок через меню навигации
-const navShopBtn = document.getElementById('navShopBtn');
-const navRealEstateBtn = document.getElementById('navRealEstateBtn');
-const businessContainer = document.getElementById('businessContainer');
-const realEstateContainer = document.getElementById('realEstateContainer');
+const navShopBtn = document.getElementById('navShopBtn'), navRealEstateBtn = document.getElementById('navRealEstateBtn');
+const businessContainer = document.getElementById('businessContainer'), realEstateContainer = document.getElementById('realEstateContainer');
 navShopBtn.addEventListener('click', () => {
-navShopBtn.classList.add('active');
-navRealEstateBtn.classList.remove('active');
-businessContainer.classList.remove('hidden');
-realEstateContainer.classList.add('hidden');
+navShopBtn.classList.add('active'); navRealEstateBtn.classList.remove('active');
+businessContainer.classList.remove('hidden'); realEstateContainer.classList.add('hidden');
 });
 navRealEstateBtn.addEventListener('click', () => {
-navRealEstateBtn.classList.add('active');
-navShopBtn.classList.remove('active');
-realEstateContainer.classList.remove('hidden');
-businessContainer.classList.add('hidden');
+navRealEstateBtn.classList.add('active'); navShopBtn.classList.remove('active');
+realEstateContainer.classList.remove('hidden'); businessContainer.classList.add('hidden');
 });
 buyStockBtn.addEventListener('click', (e) => {
 e.stopPropagation();
@@ -270,5 +262,5 @@ mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false });
 mainCoin.addEventListener('mousedown', (e) => { if ('ontouchstart' in window) return; handleCoinClick(e); });
 window.addEventListener('resize', () => { initCanvas(); drawChart(); });
 setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
-setInterval(updateChartData, 1000); setInterval(triggerEvent, 25000); setInterval(saveGame, 5000);
+setInterval(updateChartData, 1000); setInterval(triggerEvent, 25000); setInterval(() => { game.lastSaveTime = Date.now(); saveGame(); }, 5000);
 initCanvas(); renderShop(); renderRealEstate(); updateUI(); drawChart();
