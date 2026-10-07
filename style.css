@@ -1,7 +1,6 @@
 * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; touch-action: manipulation; }
 
 body { 
-    /* Светлое дневное небо за окном офиса */
     background: linear-gradient(to bottom, #e0e8f5 0%, #f4f7fc 100%);
     color: #1e293b; 
     font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
@@ -10,7 +9,6 @@ body {
     overflow: hidden; position: relative;
 }
 
-/* Слой 1: Медленно плывущие облака в небе */
 .office-background .clouds {
     position: absolute; top: 0; left: 0; width: 200%; height: 40%;
     background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.8) 0%, transparent 25%),
@@ -19,35 +17,26 @@ body {
     animation: moveClouds 60s linear infinite;
 }
 
-/* Слой 2: Силуэты небоскребов города (светло-серые, создающие глубину) */
 .office-background .city-skyline {
     position: absolute; bottom: 15vh; left: 0; width: 100%; height: 50%;
     z-index: 2; pointer-events: none; opacity: 0.45;
     background: 
-        /* Левый небоскреб */
         linear-gradient(to right, #b4c3d8 0%, #b4c3d8 100%) 5% 100% / 50px 250px no-repeat,
-        /* Башня с острой крышей по центру */
         linear-gradient(135deg, transparent 45%, #c5d2e6 46%) 30% 100% / 40px 40px no-repeat,
         linear-gradient(to right, #c5d2e6 0%, #c5d2e6 100%) 30% 100% / 80px 280px no-repeat,
-        /* Правый высокий блок */
         linear-gradient(to right, #a2b4cd 0%, #a2b4cd 100%) 75% 100% / 70px 320px no-repeat,
-        /* Маленькое здание */
         linear-gradient(to right, #cbd7e9 0%, #cbd7e9 100%) 55% 100% / 60px 140px no-repeat;
 }
 
-/* Слой 3: Панорамное остекление офиса и интерьерные колонны на переднем плане */
 .office-background .interior {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 3; pointer-events: none;
     background: 
-        /* Пол офиса (светлый глянцевый ламинат с отражением) */
         linear-gradient(to bottom, transparent 60%, rgba(241, 245, 249, 0.95) 61%) 0% 0% / 100% 100% no-repeat,
-        /* Вертикальные алюминиевые перегородки окон */
         linear-gradient(to right, rgba(203, 213, 225, 0.8) 2px, transparent 2px) repeat-x;
     background-size: 100% 100%, 25% 100%;
 }
 
-/* Мягкая анимация живого офисного освещения (солнечные блики) */
 .office-background .sun-glare {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 4; pointer-events: none;
@@ -56,14 +45,9 @@ body {
     animation: officeGlow 20s ease infinite;
 }
 
-@keyframes officeGlow { 
-    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } 
-}
-@keyframes moveClouds { 
-    0% { transform: translateX(0); } 100% { transform: translateX(-50%); } 
-}
+@keyframes officeGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes moveClouds { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* Контейнеры игрового интерфейса (Матовое стекло поверх яркого офиса) */
 .glass-panel {
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px) saturate(140%);
@@ -72,7 +56,6 @@ body {
     box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
 }
 
-/* Остальные стили интерфейса адаптированы под светлую тему */
 .header-panel { text-align: center; width: 100%; z-index: 10; position: relative; }
 .main-workspace { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex-grow: 1; width: 100%; z-index: 10; }
 .assets-holder { width: 100%; max-width: 400px; border-radius: 20px; padding: 12px; max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 10; }
@@ -86,9 +69,18 @@ body {
 .income-rate { font-size: 13px; color: #16a34a; font-family: monospace; margin-top: 2px; font-weight: bold; }
 .news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 10; font-weight: 600; }
 
-.coin-shadow-fix { filter: drop-shadow(0 12px 24px rgba(15, 23, 42, 0.15)) drop-shadow(0 0 30px rgba(212, 175, 55, 0.3)); }
-.coin { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff4be 0%, #eab308 40%, #ca8a04 80%); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #fff; text-shadow: 0 2px 4px rgba(161, 98, 7, 0.6); transition: transform 0.05s ease; cursor: pointer; border: 3px solid #ca8a04; -webkit-tap-highlight-color: transparent; z-index: 11; }
-.coin:active { transform: scale(0.92); }
+.coin-shadow-fix { filter: drop-shadow(0 16px 32px rgba(15, 23, 42, 0.25)) drop-shadow(0 0 40px rgba(234, 179, 8, 0.2)); perspective: 1000px; }
+.coin { 
+    width: 140px; height: 140px; border-radius: 50%; 
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.6) 0%, transparent 60%), radial-gradient(circle at 35% 35%, #fff6c8 0%, #facc15 30%, #eab308 60%, #a16207 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 64px; font-weight: 900; color: #fff; 
+    text-shadow: -1px -1px 1px rgba(255,255,255,0.4), 1px 2px 4px rgba(101, 65, 4, 0.8), 0px 0px 8px rgba(255,255,255,0.6); 
+    border: 5px solid #eab308;
+    box-shadow: inset 0 4px 6px rgba(255,255,255,0.6), inset 0 -4px 8px rgba(113, 63, 4, 0.6), 0 6px 0 #b45309, 0 8px 12px rgba(0,0,0,0.3);
+    cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 11; 
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d;
+}
+.coin:active { transform: scale(0.90) translateY(4px); box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(113, 63, 4, 0.6), 0 2px 0 #b45309, 0 3px 6px rgba(0,0,0,0.4); }
 
 .chart-box { width: 100%; max-width: 360px; border-radius: 14px; padding: 8px; position: relative; }
 .chart-wrap { height: 65px; width: 100%; position: relative; margin-bottom: 6px;}
