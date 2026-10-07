@@ -12,100 +12,97 @@ function playCoinSound() {
     } catch(e) {}
 }
 
-// === ИНИЦИАЛИЗАЦИЯ ТРЕХМЕРНОГО ДВИЖКА (THREE.JS) ===
-let scene, camera, renderer, coinMesh;
+// === ИНИЦИАЛИЗАЦИЯ THREE.JS (ИСПРАВЛЕНО) ===
+let scene, camera, renderer, coinMesh, container3D;
 let isClicking = false, targetScaleZ = 1, currentScaleZ = 1;
 
 function init3D() {
-    const container = document.getElementById('canvas3d-container');
-    if (!container) return;
+    container3D = document.getElementById('canvas3d-container');
+    if (!container3D) return;
 
-    // 1. Создаем сцену и прозрачную камеру
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 6;
+    camera = new THREE.PerspectiveCamera(45, container3D.clientWidth / container3D.clientHeight, 0.1, 1000);
+    camera.position.z = 5.5; // Слегка приблизили камеру для лучшей видимости
 
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(container3D.clientWidth, container3D.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
+    container3D.innerHTML = ""; // Очищаем контейнер перед добавлением холста
+    container3D.appendChild(renderer.domElement);
 
-    // 2. Создаем 3D геометрию монеты (Цилиндр)
+    // Геометрия 3D монеты
     const geometry = new THREE.CylinderGeometry(1.8, 1.8, 0.25, 40, 1);
-    
-    // Премиальный металлический золотой материал с отражениями
     const material = new THREE.MeshStandardMaterial({
-        color: 0xd4af37,      // Золотой цвет
-        metalness: 0.9,       // Высокий металлический блеск
-        roughness: 0.15,      // Мягкое отражение
+        color: 0xd4af37,
+        metalness: 0.85,
+        roughness: 0.2,
     });
 
     coinMesh = new THREE.Mesh(geometry, material);
-    // Поворачиваем монету лицом к игроку
     coinMesh.rotation.x = Math.PI / 2;
     scene.add(coinMesh);
 
-    // 3. Добавляем профессиональный свет (Трейдерский терминал)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
-
+    // Освещение сцены
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
     const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
     dirLight1.position.set(5, 5, 4);
     scene.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0xfacc15, 0.6); // Теплый блик снизу
+    const dirLight2 = new THREE.DirectionalLight(0xfacc15, 0.5);
     dirLight2.position.set(-5, -5, 2);
     scene.add(dirLight2);
 
-    // 4. Отслеживание движения мыши для 3D параллакса
+    // Параллакс при движении мыши
     window.addEventListener('mousemove', (e) => {
         if (!coinMesh) return;
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
-        coinMesh.rotation.y = (Math.PI / 2) + x * 0.5;
-        coinMesh.rotation.z = y * 0.5;
+        coinMesh.rotation.y = (Math.PI / 2) + x * 0.4;
+        coinMesh.rotation.z = y * 0.4;
     });
 
-    // Запуск цикла бесконечного 3D-рендеринга
+    // Страховочный фикс: принудительно обновляем размеры через 100мс после загрузки
+    setTimeout(resize3D, 100);
+
     animate3D();
+}
+
+function resize3D() {
+    if (renderer && camera && container3D) {
+        const w = container3D.clientWidth;
+        const h = container3D.clientHeight;
+        if (w && h) {
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+    }
 }
 
 function animate3D() {
     requestAnimationFrame(animate3D);
-
     if (coinMesh) {
-        // Постоянное легкое фоновое вращение монеты
-        if(!isClicking) {
-            coinMesh.rotation.y += 0.008;
-        }
-        // Физика пружины для анимации 3D нажатия
+        if(!isClicking) coinMesh.rotation.y += 0.008;
         currentScaleZ += (targetScaleZ - currentScaleZ) * 0.25;
         coinMesh.scale.set(1, currentScaleZ, 1);
     }
-    renderer.render(scene, camera);
+    if (renderer && scene && camera) renderer.render(scene, camera);
 }
 
-// Слушатель клика по 3D холсту
-document.getElementById('canvas3d-container').addEventListener('mousedown', (e) => {
-    isClicking = true;
-    targetScaleZ = 0.4; // Монета сильно сжимается в глубину
-    
-    // Передаем плоские координаты для генерации летящих циферок +$1
-    triggerClickLogic(e.clientX, e.clientY);
-    
-    setTimeout(() => {
-        targetScaleZ = 1; // Возвращается назад
-        isClicking = false;
-    }, 80);
-});
-
-// Адаптация под тач-экраны телефонов
-document.getElementById('canvas3d-container').addEventListener('touchstart', (e) => {
-    isClicking = true; targetScaleZ = 0.4;
-    const touch = e.touches[0];
-    triggerClickLogic(touch.clientX, touch.clientY);
-    setTimeout(() => { targetScaleZ = 1; isClicking = false; }, 80);
-});
+// Слушатели нажатий на 3D монету
+const container3DElement = document.getElementById('canvas3d-container');
+if (container3DElement) {
+    container3DElement.addEventListener('mousedown', (e) => {
+        isClicking = true; targetScaleZ = 0.4;
+        triggerClickLogic(e.clientX, e.clientY);
+        setTimeout(() => { targetScaleZ = 1; isClicking = false; }, 80);
+    });
+    container3DElement.addEventListener('touchstart', (e) => {
+        isClicking = true; targetScaleZ = 0.4;
+        const touch = e.touches[0];
+        triggerClickLogic(touch.clientX, touch.clientY);
+        setTimeout(() => { targetScaleZ = 1; isClicking = false; }, 80);
+    }, { passive: true });
+}
 
 function triggerClickLogic(clientX, clientY) {
     game.balance += game.clickPower;
@@ -118,7 +115,7 @@ function triggerClickLogic(clientX, clientY) {
     updateUI(); queueSave();
 }
 
-// === ОСТАЛЬНАЯ ЛОГИКА ИГРЫ (СОХРАНЕНА НА 100%) ===
+// === БАЗОВАЯ СТАТИСТИКА И ИНТЕРФЕЙС ===
 const upgrades = [
     { id: 'click', name: 'Офисный Маркетинг', cost: 15, multiplier: 1.45, type: 'click', power: 1, desc: 'Клик +\$1' },
     { id: 'startup', name: 'Акции Венчуров', cost: 60, multiplier: 1.5, type: 'passive', power: 1, desc: 'Доход +\$1/с' },
@@ -211,6 +208,7 @@ let saveTimeout; function queueSave() { clearTimeout(saveTimeout); saveTimeout =
 function buyAsset(asset) { if (game.balance >= asset.cost) { game.balance -= asset.cost; inventory[asset.id]++; if (asset.type === 'click') game.clickPower += asset.power; else game.baseIncome += asset.power; asset.cost = Math.round(initialCosts[asset.id] * Math.pow(asset.multiplier, inventory[asset.id])); renderShop(); updateUI(); saveGame(); } }
 function buyRealEstate(asset) { if (game.balance >= asset.cost) { game.balance -= asset.cost; reInventory[asset.id]++; game.baseIncome += asset.power; asset.cost = Math.round(initialRECosts[asset.id] * Math.pow(asset.multiplier, reInventory[asset.id])); renderRealEstate(); updateUI(); saveGame(); } }
 const upgradesTabBtn = document.getElementById('navShopBtn'), reTabBtn = document.getElementById('navRealEstateBtn'), cryptoTabBtn = document.getElementById('navCryptoBtn');
+const businessContainer = document.getElementById('businessContainer'), realEstateContainer = document.getElementById('realEstateContainer'), cryptoContainer = document.getElementById('cryptoContainer');
 if (upgradesTabBtn && reTabBtn && cryptoTabBtn) {
 function switchTab(activeBtn, activeContainer) { [upgradesTabBtn, reTabBtn, cryptoTabBtn].forEach(b => b.classList.remove('active')); [businessContainer, realEstateContainer, cryptoContainer].forEach(c => { if(c) c.classList.add('hidden'); }); activeBtn.classList.add('active'); activeContainer.classList.remove('hidden'); }
 upgradesTabBtn.addEventListener('click', () => switchTab(upgradesTabBtn, businessContainer)); reTabBtn.addEventListener('click', () => switchTab(reTabBtn, realEstateContainer)); cryptoTabBtn.addEventListener('click', () => switchTab(cryptoTabBtn, cryptoContainer));
@@ -219,8 +217,7 @@ if (buyStockBtn) buyStockBtn.addEventListener('click', () => { if (game.balance 
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', () => { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
 if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', () => { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', () => { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
-window.addEventListener('resize', () => { initCanvas(); drawChart(); if(renderer && container) { renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); } });
+window.addEventListener('resize', () => { initCanvas(); drawChart(); resize3D(); });
 setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
 setInterval(updateChartData, 1000); setInterval(() => { game.lastSaveTime = Date.now(); saveGame(); }, 5000);
-// Инициализируем плоский UI и 3D движок одновременно
 initCanvas(); renderShop(); renderRealEstate(); renderCrypto(); updateUI(); drawChart(); init3D();
