@@ -64,17 +64,75 @@ let chartData = Array(30).fill(35);
 
 function initCanvas() { if(canvas) { const dpr = window.devicePixelRatio || 1; canvas.width = canvas.offsetWidth * dpr; canvas.height = canvas.offsetHeight * dpr; ctx.scale(dpr, dpr); } }
 
+// ИСПРАВЛЕНО: Ультра-реалистичный рендеринг графика (Трендовый Bloomberg стиль)
 function drawChart() {
     if (!canvas || !canvas.offsetWidth) return;
     const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1);
-    ctx.clearRect(0, 0, w, h); ctx.beginPath(); ctx.lineWidth = 2;
-    ctx.strokeStyle = game.currentModifier >= 1 ? '#10b981' : '#ef4444';
-    const step = w / (chartData.length - 1), minP = Math.min(...chartData) - 5, maxP = Math.max(...chartData) + 5, range = maxP - minP;
-    for(let i=0; i<chartData.length; i++) {
-        let x = i * step, y = h - ((chartData[i] - minP) / range) * (h - 15) - 5;
-        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    ctx.clearRect(0, 0, w, h);
+    
+    const minP = Math.min(...chartData) - 3, maxP = Math.max(...chartData) + 3, range = maxP - minP;
+    const step = w / (chartData.length - 1);
+    
+    // 1. Отрисовка статической горизонтальной сетки уровней (Grid)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.setLineDash([4, 4]); // Пунктирная линия
+    for (let i = 1; i < 4; i++) {
+        let gridY = (h / 4) * i;
+        ctx.beginPath(); ctx.moveTo(0, gridY); ctx.lineTo(w, gridY); ctx.stroke();
     }
+    ctx.setLineDash([]); // Возвращаем сплошную линию
+
+    // Вычисляем массив точек для сглаживания
+    let points = [];
+    for (let i = 0; i < chartData.length; i++) {
+        points.push({
+            x: i * step,
+            y: h - ((chartData[i] - minP) / range) * (h - 20) - 8
+        });
+    }
+
+    const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444';
+    const gradientColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
+
+    // 2. Отрисовка полупрозрачного градиентного заполнения (Area Fill) под графиком
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, h);
+    ctx.lineTo(points[0].x, points[0].y);
+    for (let i = 0; i < points.length - 1; i++) {
+        let xc = (points[i].x + points[i+1].x) / 2;
+        let yc = (points[i].y + points[i+1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+    }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+    ctx.lineTo(points[points.length - 1].x, h);
+    ctx.closePath();
+    
+    let areaGrad = ctx.createLinearGradient(0, 0, 0, h);
+    areaGrad.addColorStop(0, gradientColor);
+    areaGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = areaGrad; ctx.fill();
+
+    // 3. Отрисовка основной светящейся неоновой линии (Smooth Neon Line)
+    ctx.beginPath();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = mainColor;
+    
+    // Эффект свечения линии
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 8;
+    
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 0; i < points.length - 1; i++) {
+        let xc = (points[i].x + points[i+1].x) / 2;
+        let yc = (points[i].y + points[i+1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+    }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
     ctx.stroke();
+    
+    // Сбрасываем тени, чтобы они не размывали другие элементы
+    ctx.shadowBlur = 0;
 }
 
 function updateChartData() {
@@ -125,37 +183,30 @@ function renderCrypto() {
         <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
             <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                 <div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div>
-                <div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div>
-            </div>
-            <div class="crypto-trade-row">
-                <button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button>
-                <button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button>
-            </div>
-        </div>
-    `;
-    const bBtn = document.getElementById('buyBtcBtn'), sBtn = document.getElementById('sellBtcBtn');
-    if(bBtn) bBtn.addEventListener('click', () => { if(game.balance >= btcPrice) { game.balance -= btcPrice; game.cryptoBtc = (game.cryptoBtc || 0) + 1; updateUI(); renderCrypto(); saveGame(); } });
-    if(sBtn) sBtn.addEventListener('click', () => { if(game.cryptoBtc >= 1) { game.cryptoBtc -= 1; game.balance += btcPrice; updateUI(); renderCrypto(); saveGame(); } });
-}
+$${btcPrice.toFixed(2)}
 
+
+<button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC
+<button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC
+`;
+const bBtn = document.getElementById('buyBtcBtn'), sBtn = document.getElementById('sellBtcBtn');
+if(bBtn) bBtn.addEventListener('click', () => { if(game.balance >= btcPrice) { game.balance -= btcPrice; game.cryptoBtc = (game.cryptoBtc || 0) + 1; updateUI(); renderCrypto(); saveGame(); } });
+if(sBtn) sBtn.addEventListener('click', () => { if(game.cryptoBtc >= 1) { game.cryptoBtc -= 1; game.balance += btcPrice; updateUI(); renderCrypto(); saveGame(); } });
+}
 function updateUI() {
-    if (balDisp) balDisp.innerText = formatMoney(game.balance);
-    let actInc = game.baseIncome * game.currentModifier;
-    if (incDisp) incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
-    
-    // ИСПРАВЛЕНО: Безопасное получение начального ранга по индексу 0
-    let currRank = ranks[0].title;
-    for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
-    if (rankDisp) rankDisp.innerText = currRank;
-    
-    upgrades.forEach(up => { const btn = document.getElementById(`btn-${up.id}`); if (btn) btn.disabled = game.balance < up.cost; });
-    realEstateUpgrades.forEach(up => { const btn = document.getElementById(`btn-${up.id}`); if (btn) btn.disabled = game.balance < up.cost; });
-    
-    if (buyStockBtn) { buyStockBtn.disabled = game.balance < stockPrice; buyStockBtn.innerText = `Купить 1 (${game.ownedStocks})`; }
-    if (buyStock10Btn) buyStock10Btn.disabled = game.balance < (stockPrice * 10);
-    if (buyStockMaxBtn) buyStockMaxBtn.disabled = game.balance < stockPrice;
-    if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0;
-    if (dailyBtn) dailyBtn.disabled = (Date.now() - game.lastDailyTime) <= 86400000;
+if (balDisp) balDisp.innerText = formatMoney(game.balance);
+let actInc = game.baseIncome * game.currentModifier;
+if (incDisp) incDisp.innerText = Доход: ${formatMoney(actInc)}/с + (game.currentModifier !== 1 ?  (x${game.currentModifier}) : '');
+let currRank = ranks[0].title;
+for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
+if (rankDisp) rankDisp.innerText = currRank;
+upgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
+realEstateUpgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
+if (buyStockBtn) { buyStockBtn.disabled = game.balance < stockPrice; buyStockBtn.innerText = Купить 1 (${game.ownedStocks}); }
+if (buyStock10Btn) buyStock10Btn.disabled = game.balance < (stockPrice * 10);
+if (buyStockMaxBtn) buyStockMaxBtn.disabled = game.balance < stockPrice;
+if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0;
+if (dailyBtn) dailyBtn.disabled = (Date.now() - game.lastDailyTime) <= 86400000;
 }
 function saveGame() { localStorage.setItem('biz_emp_v10', JSON.stringify({ game, inventory, reInventory })); }
 let saveTimeout; function queueSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 1500); }
