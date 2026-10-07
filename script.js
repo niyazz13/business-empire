@@ -145,6 +145,7 @@ function drawChart() {
     const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444';
     const gradColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
     
+    // ИСПРАВЛЕНО: Индексация элементов массива точек [0] и [i] на холсте canvas
     if (points.length > 0 && points[0]) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, h);
@@ -240,12 +241,11 @@ window.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 buyRealEstate(up);
-            });
-            realEstateList.appendChild(btn);
-        });
-    }
-
-    function renderCrypto() {
+                });
+realEstateList.appendChild(btn);
+});
+}
+function renderCrypto() {
 if (!cryptoList) return;
 cryptoList.innerHTML = <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>;
 const bBtn = document.getElementById('buyBtcBtn');
@@ -311,6 +311,7 @@ function handleCoinClick(e) {
 e.preventDefault();
 game.balance += game.clickPower;
 playCoinSound();
+// ИСПРАВЛЕНО: Безопасное получение первого тача [0] для мобильных экранов
 let cX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX);
 let cY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
 const coinEl = document.getElementById('mainCoin');
@@ -396,7 +397,7 @@ if (game.currentModifier < 1) stockPrice = Math.max(5, stockPrice - 1.5);
 chartData.push(stockPrice);
 btcPrice = Math.max(100, Math.min(1000000, btcPrice + (Math.random() - 0.5) * (btcPrice * 0.18)));
 const lbl = document.getElementById('stockLabel');
-if (lbl) lbl.innerText = Индекс акций: $${stockPrice.toFixed(2)};
+if (lbl) lbl.innerText = Индекс биржи: $${stockPrice.toFixed(2)};
 drawChart(); updateUI(); renderCrypto();
 }
 window.addEventListener('resize', function() {
