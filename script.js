@@ -53,7 +53,7 @@ function playCoinSound() {
         osc.start();
         osc.stop(ctxAudio.currentTime + 0.3);
     } catch (e) {
-        console.error("Ошибка воспроизведения звука сейфа: ", e);
+        console.error("Ошибка звука сейфа: ", e);
     }
 }
 
@@ -122,6 +122,7 @@ function initCanvas() {
     }
 }
 
+// ИСПРАВЛЕНО: Индексы точек массива считываются строго через [0] и [points.length - 1]
 function drawChart() {
     if (!canvas || !canvas.offsetWidth) return;
     
@@ -154,7 +155,6 @@ function drawChart() {
     const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444';
     const gradColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
     
-    // ИСПРАВЛЕНО НАВСЕГДА: Индексы массива считываются корректно [0] и [i]
     if (points.length > 0) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, h);
@@ -260,7 +260,7 @@ function renderRealEstate() {
 
 function renderCrypto() {
     if (!cryptoList) return;
-    cryptoList.innerHTML = <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>;
+cryptoList.innerHTML = <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>;
 const bBtn = document.getElementById('buyBtcBtn');
 const sBtn = document.getElementById('sellBtcBtn');
 if (bBtn) {
@@ -273,7 +273,7 @@ renderCrypto();
 saveGame();
 }
 });
-}  
+}
 if (sBtn) {
 sBtn.addEventListener('click', function() {
 if (game.cryptoBtc >= 1) {
@@ -286,14 +286,12 @@ saveGame();
 });
 }
 }
-
 function updateUI() {
 if (balDisp) balDisp.innerText = formatMoney(game.balance);
 let actInc = game.baseIncome * game.currentModifier;
 if (incDisp) {
 incDisp.innerText = Доход: ${formatMoney(actInc)}/с + (game.currentModifier !== 1 ?  (x${game.currentModifier}) : '');
 }
-    
 let currRank = "💼 Стажер";
 for (let i = 0; i < ranks.length; i++) {
 if (game.balance >= ranks[i].limit) {
@@ -301,39 +299,31 @@ currRank = ranks[i].title;
 }
 }
 if (rankDisp) rankDisp.innerText = currRank;
-    
 upgrades.forEach(function(up) {
 const btn = document.getElementById("btn-" + up.id);
 if (btn) btn.disabled = game.balance < up.cost;
 });
-    
 realEstateUpgrades.forEach(function(up) {
 const btn = document.getElementById("btn-" + up.id);
 if (btn) btn.disabled = game.balance < up.cost;
 });
-    
 if (buyStockBtn) {
 buyStockBtn.disabled = game.balance < stockPrice;
 buyStockBtn.innerText = Купить 1 (${game.ownedStocks});
 }
-    
 if (buyStock10Btn) buyStock10Btn.disabled = game.balance < (stockPrice * 10);
 if (buyStockMaxBtn) buyStockMaxBtn.disabled = game.balance < stockPrice;
 if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0;
 if (dailyBtn) dailyBtn.disabled = (Date.now() - game.lastDailyTime) <= 86400000;
 }
-
 function saveGame() {
 localStorage.setItem('biz_emp_v10', JSON.stringify({ game, inventory, reInventory }));
 }
-
 let saveTimeout;
 function queueSave() {
 clearTimeout(saveTimeout);
 saveTimeout = setTimeout(saveGame, 1500);
 }
-
-// Эффект объемного клика по бронедвери сейфа
 function handleCoinClick(e) {
 e.preventDefault();
 game.balance += game.clickPower;
@@ -345,23 +335,18 @@ if (coinEl && cX && cY) {
 const rect = coinEl.getBoundingClientRect();
 const cX_ctr = rect.left + rect.width / 2;
 const cY_ctr = rect.top + rect.height / 2;
-    
 const tX = ((cY - cY_ctr) / (rect.height / 2)) * -25;
 const tY = ((cX - cX_ctr) / (rect.width / 2)) * 25;
-    
-// Сейф вдавливается по оси Z без кручения
 coinEl.style.transform = rotateX(${12 + tX}deg) rotateY(${-14 + tY}deg) translateZ(-10px);
 setTimeout(function() {
 coinEl.style.transform = 'rotateX(12deg) rotateY(-14deg) translateZ(0)';
 }, 80);
-    
 const el = document.createElement('div');
 el.className = 'floating-income';
 el.innerText = +$${game.clickPower};
 el.style.left = ${cX - 10}px;
-el.style.top = ${cY - 20}px;
+el.style.top = ${clientY - 20}px;
 document.body.appendChild(el);
-    
 setTimeout(function() {
 el.remove();
 }, 500);
@@ -369,7 +354,6 @@ el.remove();
 updateUI();
 queueSave();
 }
-
 function buyAsset(asset) {
 if (game.balance >= asset.cost) {
 game.balance -= asset.cost;
@@ -385,7 +369,6 @@ updateUI();
 saveGame();
 }
 }
-
 function buyRealEstate(asset) {
 if (game.balance >= asset.cost) {
 game.balance -= asset.cost;
@@ -397,11 +380,9 @@ updateUI();
 saveGame();
 }
 }
-
 const navShopBtn = document.getElementById('navShopBtn');
 const navRealEstateBtn = document.getElementById('navRealEstateBtn');
 const navCryptoBtn = document.getElementById('navCryptoBtn');
-
 const businessContainer = document.getElementById('businessContainer');
 const realEstateContainer = document.getElementById('realEstateContainer');
 const cryptoContainer = document.getElementById('cryptoContainer');
@@ -416,12 +397,10 @@ navShopBtn.addEventListener('click', function() { switchTab(navShopBtn, business
 navRealEstateBtn.addEventListener('click', function() { switchTab(navRealEstateBtn, realEstateContainer); });
 navCryptoBtn.addEventListener('click', function() { switchTab(navCryptoBtn, cryptoContainer); });
 }
-
 if (buyStockBtn) buyStockBtn.addEventListener('click', function() { if (game.balance >= stockPrice) { game.balance -= stockPrice; game.ownedStocks++; updateUI(); saveGame(); } });
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', function() { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
 if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', function() { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', function() { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
-
 const mainCoin = document.getElementById('mainCoin');
 if (mainCoin) {
 mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false });
@@ -430,25 +409,21 @@ if ('ontouchstart' in window) return;
 handleCoinClick(e);
 });
 }
-
 window.addEventListener('resize', function() {
 initCanvas();
 drawChart();
 });
-
 setInterval(function() {
 if (game.baseIncome > 0) {
 game.balance += (game.baseIncome * game.currentModifier) / 10;
 updateUI();
 }
 }, 100);
-
 setInterval(updateChartData, 1000);
 setInterval(function() {
 game.lastSaveTime = Date.now();
 saveGame();
 }, 5000);
-
 initCanvas();
 renderShop();
 renderRealEstate();
