@@ -43,18 +43,18 @@ function drawChart() {
     const w = canvas.width / (window.devicePixelRatio || 1);
     const h = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, w, h); ctx.beginPath(); ctx.lineWidth = 2;
-    ctx.strokeStyle = game.currentModifier >= 1 ? '#2ecc71' : '#ff4757';
+    
+    // Исправлено под светлую палитру бизнес-центра
+    ctx.strokeStyle = game.currentModifier >= 1 ? '#16a34a' : '#dc2626';
     
     const step = w / (chartData.length - 1);
     
-    // Динамическое масштабирование графика, чтобы он не сплющивался
     const minPrice = Math.min(...chartData) - 5;
     const maxPrice = Math.max(...chartData) + 5;
     const priceRange = maxPrice - minPrice;
 
     for(let i=0; i<chartData.length; i++) {
         let x = i * step;
-        // Пропорциональный расчет высоты без жесткого хардкода в 70 единиц
         let y = h - ((chartData[i] - minPrice) / priceRange) * (h - 15) - 5;
         if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
@@ -77,11 +77,11 @@ function triggerEvent() {
     const rand = Math.random();
     if (rand < 0.35) {
         game.currentModifier = 0.4; newsTicker.style.display = 'block';
-        newsTicker.style.background = 'rgba(255, 71, 87, 0.15)'; newsTicker.style.borderColor = '#ff4757'; newsTicker.style.color = '#ff4757';
+        newsTicker.style.background = 'rgba(220, 38, 38, 0.1)'; newsTicker.style.borderColor = '#dc2626'; newsTicker.style.color = '#dc2626';
         newsTicker.innerText = "🚨 НАЛОГОВЫЙ КРИЗИС: Акции падают, доходы снижены на 60%!";
     } else if (rand > 0.65) {
         game.currentModifier = 2.0; newsTicker.style.display = 'block';
-        newsTicker.style.background = 'rgba(46, 204, 113, 0.15)'; newsTicker.style.borderColor = '#2ecc71'; newsTicker.style.color = '#2ecc71';
+        newsTicker.style.background = 'rgba(22, 163, 74, 0.1)'; newsTicker.style.borderColor = '#16a34a'; newsTicker.style.color = '#16a34a';
         newsTicker.innerText = "🚀 ЭКОНОМИЧЕСКИЙ БУМ: Рынок растет, доходы увеличены в 2 раза!";
     } else { game.currentModifier = 1.0; newsTicker.style.display = 'none'; }
 }
@@ -120,6 +120,7 @@ function updateUI() {
     let actInc = game.baseIncome * game.currentModifier;
     incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     
+    // ОШИБКА ИСПРАВЛЕНА: Теперь правильно берется дефолтный ранг из массива
     let currRank = ranks[0].title;
     for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
     rankDisp.innerText = currRank;
@@ -127,7 +128,6 @@ function updateUI() {
     upgrades.forEach(up => { const btn = document.getElementById(`btn-${up.id}`); if (btn) btn.disabled = game.balance < up.cost; });
     
     buyStockBtn.disabled = game.balance < stockPrice;
-    // Исправлен текст кнопки: теперь понятно, что покупается 1 штука, а в скобках — остаток
     buyStockBtn.innerText = `Купить 1 шт. (${game.ownedStocks})`;
     sellStockBtn.disabled = game.ownedStocks <= 0;
     
@@ -137,7 +137,6 @@ function updateUI() {
 
 function saveGame() { game.lastSaveTime = Date.now(); localStorage.setItem('biz_emp_v8', JSON.stringify({ game, inventory })); }
 
-// Оптимизированное сохранение при кликах (сохраняет не чаще чем раз в 1.5 секунды, спасая от лагов)
 let saveTimeout;
 function queueSave() {
     clearTimeout(saveTimeout);
@@ -154,7 +153,7 @@ function handleCoinClick(e) {
         setTimeout(() => el.remove(), 500);
     }
     updateUI();
-    queueSave(); // Запуск отложенного сохранения прогресса кликов
+    queueSave();
 }
 
 function buyAsset(asset) {
@@ -199,11 +198,9 @@ const mainCoin = document.getElementById('mainCoin');
 mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false });
 mainCoin.addEventListener('mousedown', (e) => { if ('ontouchstart' in window) return; handleCoinClick(e); });
 
-// График больше не ломается и перерисовывается при ресайзе экрана
 window.addEventListener('resize', () => { initCanvas(); drawChart(); });
 
 setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
 setInterval(updateChartData, 1000); setInterval(triggerEvent, 25000); setInterval(saveGame, 5000);
 
 initCanvas(); renderShop(); updateUI(); drawChart();
-
