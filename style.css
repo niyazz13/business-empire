@@ -1,10 +1,8 @@
 * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; touch-action: manipulation; }
 
 body { 
-    /* Базовый градиент светлого бизнес-центра */
-    background: linear-gradient(135deg, #f1f3f6 0%, #e4e9f0 40%, #eceff4 70%, #dbe3ed 100%);
-    background-size: 400% 400%;
-    animation: officeGlow 14s ease infinite; 
+    /* Светлое дневное небо за окном офиса */
+    background: linear-gradient(to bottom, #e0e8f5 0%, #f4f7fc 100%);
     color: #1e293b; 
     font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
     display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
@@ -12,63 +10,84 @@ body {
     overflow: hidden; position: relative;
 }
 
-/* Слой 1: Движущиеся облака (Самый глубокий задний план) */
-.office-clouds {
-    position: absolute; top: 0; left: 0; width: 200%; height: 50%;
-    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.7) 0%, transparent 40%),
-                radial-gradient(circle at 60% 20%, rgba(255,255,255,0.6) 0%, transparent 35%);
-    z-index: 1; pointer-events: none; opacity: 0.6;
-    animation: moveClouds 45s linear infinite;
+/* Слой 1: Медленно плывущие облака в небе */
+.office-background .clouds {
+    position: absolute; top: 0; left: 0; width: 200%; height: 40%;
+    background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.8) 0%, transparent 25%),
+                radial-gradient(circle at 55% 40%, rgba(255,255,255,0.9) 0%, transparent 30%);
+    z-index: 1; pointer-events: none; opacity: 0.7;
+    animation: moveClouds 60s linear infinite;
 }
 
-/* Слой 2: Геометрическая сетка стеклянного фасада небоскреба */
-body::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+/* Слой 2: Силуэты небоскребов города (светло-серые, создающие глубину) */
+.office-background .city-skyline {
+    position: absolute; bottom: 15vh; left: 0; width: 100%; height: 50%;
+    z-index: 2; pointer-events: none; opacity: 0.45;
     background: 
-        linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px), 
-        linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
-        linear-gradient(to top, rgba(255,255,255,0.7), transparent 60%);
-    background-size: 40px 40px, 40px 40px, 100% 100%; 
-    z-index: 2; pointer-events: none; /* Изменено на z-index: 2 для корректного наложения */
-    opacity: 0.8;
+        /* Левый небоскреб */
+        linear-gradient(to right, #b4c3d8 0%, #b4c3d8 100%) 5% 100% / 50px 250px no-repeat,
+        /* Башня с острой крышей по центру */
+        linear-gradient(135deg, transparent 45%, #c5d2e6 46%) 30% 100% / 40px 40px no-repeat,
+        linear-gradient(to right, #c5d2e6 0%, #c5d2e6 100%) 30% 100% / 80px 280px no-repeat,
+        /* Правый высокий блок */
+        linear-gradient(to right, #a2b4cd 0%, #a2b4cd 100%) 75% 100% / 70px 320px no-repeat,
+        /* Маленькое здание */
+        linear-gradient(to right, #cbd7e9 0%, #cbd7e9 100%) 55% 100% / 60px 140px no-repeat;
+}
+
+/* Слой 3: Панорамное остекление офиса и интерьерные колонны на переднем плане */
+.office-background .interior {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 3; pointer-events: none;
+    background: 
+        /* Пол офиса (светлый глянцевый ламинат с отражением) */
+        linear-gradient(to bottom, transparent 60%, rgba(241, 245, 249, 0.95) 61%) 0% 0% / 100% 100% no-repeat,
+        /* Вертикальные алюминиевые перегородки окон */
+        linear-gradient(to right, rgba(203, 213, 225, 0.8) 2px, transparent 2px) repeat-x;
+    background-size: 100% 100%, 25% 100%;
+}
+
+/* Мягкая анимация живого офисного освещения (солнечные блики) */
+.office-background .sun-glare {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 4; pointer-events: none;
+    background: linear-gradient(125deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(224,232,245,0.3) 100%);
+    background-size: 300% 300%;
+    animation: officeGlow 20s ease infinite;
 }
 
 @keyframes officeGlow { 
-    0% { background-position: 0% 50%; } 
-    50% { background-position: 100% 50%; } 
-    100% { background-position: 0% 50%; } 
+    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } 
 }
-
 @keyframes moveClouds { 
-    0% { transform: translateX(0); } 
-    100% { transform: translateX(-50%); } 
+    0% { transform: translateX(0); } 100% { transform: translateX(-50%); } 
 }
 
-/* Слой 3 и выше: Игровой интерфейс (z-index: 3 для безопасности кликов) */
-.header-panel { text-align: center; width: 100%; z-index: 3; position: relative; }
-.main-workspace { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex-grow: 1; width: 100%; z-index: 3; }
-.assets-holder { width: 100%; max-width: 400px; border-radius: 20px; padding: 12px; max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 3; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-
-/* Контейнеры панелей в стиле "Матовое стекло" */
+/* Контейнеры игрового интерфейса (Матовое стекло поверх яркого офиса) */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(16px) saturate(120%);
-    -webkit-backdrop-filter: blur(16px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
 }
+
+/* Остальные стили интерфейса адаптированы под светлую тему */
+.header-panel { text-align: center; width: 100%; z-index: 10; position: relative; }
+.main-workspace { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex-grow: 1; width: 100%; z-index: 10; }
+.assets-holder { width: 100%; max-width: 400px; border-radius: 20px; padding: 12px; max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 10; }
 
 .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin: 0 auto 6px auto; }
-.rank-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #b58900; background: rgba(212, 175, 55, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.35); font-weight: 700; backdrop-filter: blur(5px); }
-.daily-btn { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #00a896; background: rgba(0, 168, 150, 0.1); border: 1px solid rgba(0, 168, 150, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 700; cursor: pointer; }
+.rank-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #b58900; background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.4); font-weight: 700; }
+.daily-btn { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #00a896; background: rgba(0, 168, 150, 0.12); border: 1px solid rgba(0, 168, 150, 0.35); padding: 4px 10px; border-radius: 20px; font-weight: 700; cursor: pointer; }
 .daily-btn:disabled { color: #94a3b8; border-color: rgba(148, 163, 184, 0.2); background: transparent; }
 
-.balance { font-size: 38px; font-weight: 800; background: linear-gradient(to bottom, #0f172a 40%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }
+.balance { font-size: 38px; font-weight: 800; background: linear-gradient(to bottom, #0f172a 30%, #334155 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.03)); }
 .income-rate { font-size: 13px; color: #16a34a; font-family: monospace; margin-top: 2px; font-weight: bold; }
-.news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 3; font-weight: 600; }
+.news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 10; font-weight: 600; }
 
-.coin-shadow-fix { filter: drop-shadow(0 10px 20px rgba(15, 23, 42, 0.15)) drop-shadow(0 0 30px rgba(212, 175, 55, 0.25)); }
-.coin { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff4be 0%, #eab308 40%, #ca8a04 80%); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #fff; text-shadow: 0 2px 4px rgba(161, 98, 7, 0.6); transition: transform 0.05s ease; cursor: pointer; border: 3px solid #ca8a04; -webkit-tap-highlight-color: transparent; z-index: 4; }
+.coin-shadow-fix { filter: drop-shadow(0 12px 24px rgba(15, 23, 42, 0.15)) drop-shadow(0 0 30px rgba(212, 175, 55, 0.3)); }
+.coin { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff4be 0%, #eab308 40%, #ca8a04 80%); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #fff; text-shadow: 0 2px 4px rgba(161, 98, 7, 0.6); transition: transform 0.05s ease; cursor: pointer; border: 3px solid #ca8a04; -webkit-tap-highlight-color: transparent; z-index: 11; }
 .coin:active { transform: scale(0.92); }
 
 .chart-box { width: 100%; max-width: 360px; border-radius: 14px; padding: 8px; position: relative; }
@@ -78,18 +97,18 @@ canvas { width: 100%; height: 100%; display: block; }
 
 .trade-controls { display: flex; gap: 8px; width: 100%; }
 .trade-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: white; cursor: pointer; }
-.trade-buy { background: rgba(22, 163, 74, 0.15); border: 1px solid #16a34a; color: #16a34a; }
-.trade-sell { background: rgba(220, 38, 38, 0.15); border: 1px solid #dc2626; color: #dc2626; }
+.trade-buy { background: rgba(22, 163, 74, 0.18); border: 1px solid #16a34a; color: #16a34a; }
+.trade-sell { background: rgba(220, 38, 38, 0.18); border: 1px solid #dc2626; color: #dc2626; }
 .trade-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
-.floating-income { position: absolute; font-size: 24px; font-weight: 800; color: #16a34a; text-shadow: 0 0 10px rgba(22, 163, 74, 0.3), 0 1px 2px rgba(0,0,0,0.1); pointer-events: none; animation: floatUp 0.5s ease-out forwards; z-index: 10; }
+.floating-income { position: absolute; font-size: 24px; font-weight: 800; color: #16a34a; text-shadow: 0 0 10px rgba(22, 163, 74, 0.2), 0 1px 2px rgba(0,0,0,0.1); pointer-events: none; animation: floatUp 0.5s ease-out forwards; z-index: 100; }
 @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-90px); } }
 
-.asset-item { width: 100%; background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.04); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #1e293b; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.asset-item { width: 100%; background: rgba(255, 255, 255, 0.45); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #1e293b; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .asset-item:last-child { margin-bottom: 0; }
 .asset-content { display: flex; align-items: center; gap: 12px; }
 
-.icon-wrapper { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.icon-wrapper { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .ico-click { width: 14px; height: 14px; border: 2px solid #64748b; border-radius: 50%; }
 .ico-startup { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 16px solid #64748b; }
 .ico-retail { width: 14px; height: 14px; border: 2px solid #64748b; transform: rotate(45deg); }
@@ -98,15 +117,15 @@ canvas { width: 100%; height: 100%; display: block; }
 
 .asset-name { font-size: 14px; font-weight: 600; text-align: left; }
 .asset-stats { font-size: 11px; color: #64748b; text-align: left; margin-top: 2px; }
-.asset-cost { padding: 5px 10px; background: rgba(0, 0, 0, 0.04); border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: 700; color: #b58900; border: 1px solid rgba(0,0,0,0.02); }
+.asset-cost { padding: 5px 10px; background: rgba(0, 0, 0, 0.05); border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: 700; color: #b58900; border: 1px solid rgba(0,0,0,0.02); }
 
-.asset-item:not(:disabled) { border-color: rgba(22, 163, 74, 0.2); background: rgba(255, 255, 255, 0.8); }
-.asset-item:not(:disabled) .icon-wrapper { border-color: rgba(22, 163, 74, 0.4); background: rgba(22, 163, 74, 0.06); animation: glowPulse 2s infinite ease-in-out; }
+.asset-item:not(:disabled) { border-color: rgba(22, 163, 74, 0.25); background: rgba(255, 255, 255, 0.85); }
+.asset-item:not(:disabled) .icon-wrapper { border-color: rgba(22, 163, 74, 0.45); background: rgba(22, 163, 74, 0.08); animation: glowPulse 2s infinite ease-in-out; }
 .asset-item:not(:disabled) .ico-click { border-color: #0d9488; }
 .asset-item:not(:disabled) .ico-startup { border-bottom-color: #16a34a; }
 .asset-item:not(:disabled) .ico-retail { border-color: #0284c7; }
 .asset-item:not(:disabled) .ico-oil { border-bottom-color: #ea580c; }
 .asset-item:not(:disabled) .ico-it { background: #9333ea; }
-.asset-item:disabled { opacity: 0.3; cursor: not-allowed; }
+.asset-item:disabled { opacity: 0.35; cursor: not-allowed; }
 
-@keyframes glowPulse { 0% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } 50% { box-shadow: 0 0 10px rgba(22, 163, 74, 0.25); transform: scale(1.04); } 100% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } }
+@keyframes glowPulse { 0% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } 50% { box-shadow: 0 0 10px rgba(22, 163, 74, 0.2); transform: scale(1.04); } 100% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } }
