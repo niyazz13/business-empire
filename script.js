@@ -53,7 +53,7 @@ function playCoinSound() {
         osc.start();
         osc.stop(ctxAudio.currentTime + 0.3);
     } catch (e) {
-        console.error("Ошибка звука сейфа: ", e);
+        console.error("Ошибка звука: ", e);
     }
 }
 
@@ -122,7 +122,7 @@ function initCanvas() {
     }
 }
 
-// ИСПРАВЛЕНО: Индексы точек массива считываются строго через [0] и [points.length - 1]
+// ПОЛНЫЙ ФИКС ОШИБКИ: points[0] вместо points.x
 function drawChart() {
     if (!canvas || !canvas.offsetWidth) return;
     
@@ -299,7 +299,8 @@ currRank = ranks[i].title;
 }
 }
 if (rankDisp) rankDisp.innerText = currRank;
-upgrades.forEach(function(up) {
+
+    upgrades.forEach(function(up) {
 const btn = document.getElementById("btn-" + up.id);
 if (btn) btn.disabled = game.balance < up.cost;
 });
@@ -316,14 +317,17 @@ if (buyStockMaxBtn) buyStockMaxBtn.disabled = game.balance < stockPrice;
 if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0;
 if (dailyBtn) dailyBtn.disabled = (Date.now() - game.lastDailyTime) <= 86400000;
 }
+
 function saveGame() {
 localStorage.setItem('biz_emp_v10', JSON.stringify({ game, inventory, reInventory }));
 }
+
 let saveTimeout;
 function queueSave() {
 clearTimeout(saveTimeout);
 saveTimeout = setTimeout(saveGame, 1500);
 }
+
 function handleCoinClick(e) {
 e.preventDefault();
 game.balance += game.clickPower;
@@ -331,7 +335,8 @@ playCoinSound();
 let cX = e.clientX || (e.touches && e.touches.clientX);
 let cY = e.clientY || (e.touches && e.touches.clientY);
 const coinEl = document.getElementById('mainCoin');
-if (coinEl && cX && cY) {
+
+    if (coinEl && cX && cY) {
 const rect = coinEl.getBoundingClientRect();
 const cX_ctr = rect.left + rect.width / 2;
 const cY_ctr = rect.top + rect.height / 2;
@@ -341,19 +346,22 @@ coinEl.style.transform = rotateX(${12 + tX}deg) rotateY(${-14 + tY}deg) translat
 setTimeout(function() {
 coinEl.style.transform = 'rotateX(12deg) rotateY(-14deg) translateZ(0)';
 }, 80);
+    
 const el = document.createElement('div');
 el.className = 'floating-income';
 el.innerText = +$${game.clickPower};
 el.style.left = ${cX - 10}px;
-el.style.top = ${clientY - 20}px;
+el.style.top = ${cY - 20}px;
 document.body.appendChild(el);
-setTimeout(function() {
+
+    setTimeout(function() {
 el.remove();
 }, 500);
 }
 updateUI();
 queueSave();
 }
+
 function buyAsset(asset) {
 if (game.balance >= asset.cost) {
 game.balance -= asset.cost;
@@ -369,6 +377,7 @@ updateUI();
 saveGame();
 }
 }
+
 function buyRealEstate(asset) {
 if (game.balance >= asset.cost) {
 game.balance -= asset.cost;
@@ -380,12 +389,15 @@ updateUI();
 saveGame();
 }
 }
+
 const navShopBtn = document.getElementById('navShopBtn');
 const navRealEstateBtn = document.getElementById('navRealEstateBtn');
 const navCryptoBtn = document.getElementById('navCryptoBtn');
+
 const businessContainer = document.getElementById('businessContainer');
 const realEstateContainer = document.getElementById('realEstateContainer');
 const cryptoContainer = document.getElementById('cryptoContainer');
+
 if (navShopBtn && navRealEstateBtn && navCryptoBtn) {
 function switchTab(activeBtn, activeContainer) {
 [navShopBtn, navRealEstateBtn, navCryptoBtn].forEach(function(b) { b.classList.remove('active'); });
@@ -397,10 +409,12 @@ navShopBtn.addEventListener('click', function() { switchTab(navShopBtn, business
 navRealEstateBtn.addEventListener('click', function() { switchTab(navRealEstateBtn, realEstateContainer); });
 navCryptoBtn.addEventListener('click', function() { switchTab(navCryptoBtn, cryptoContainer); });
 }
+
 if (buyStockBtn) buyStockBtn.addEventListener('click', function() { if (game.balance >= stockPrice) { game.balance -= stockPrice; game.ownedStocks++; updateUI(); saveGame(); } });
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', function() { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
 if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', function() { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', function() { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
+
 const mainCoin = document.getElementById('mainCoin');
 if (mainCoin) {
 mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false });
@@ -409,21 +423,25 @@ if ('ontouchstart' in window) return;
 handleCoinClick(e);
 });
 }
+
 window.addEventListener('resize', function() {
 initCanvas();
 drawChart();
 });
+
 setInterval(function() {
 if (game.baseIncome > 0) {
 game.balance += (game.baseIncome * game.currentModifier) / 10;
 updateUI();
 }
 }, 100);
+
 setInterval(updateChartData, 1000);
 setInterval(function() {
 game.lastSaveTime = Date.now();
 saveGame();
 }, 5000);
+
 initCanvas();
 renderShop();
 renderRealEstate();
