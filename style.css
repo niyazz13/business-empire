@@ -1,7 +1,7 @@
 * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; touch-action: manipulation; }
 
 body { 
-    background: linear-gradient(to bottom, #e0e8f5 0%, #f4f7fc 100%);
+    background: linear-gradient(to bottom, #e0e8f5 0%, #f4f7fc 100%) !important;
     color: #1e293b; 
     font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
     display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
@@ -9,6 +9,19 @@ body {
     overflow: hidden; position: relative;
 }
 
+/* Фикс отображения: контейнер жестко развернут под игровым интерфейсом */
+.office-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Медленно плывущие облака в небе */
 .office-background .clouds {
     position: absolute; top: 0; left: 0; width: 200%; height: 40%;
     background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.8) 0%, transparent 25%),
@@ -17,8 +30,9 @@ body {
     animation: moveClouds 60s linear infinite;
 }
 
+/* Силуэты небоскребов мегаполиса на горизонте */
 .office-background .city-skyline {
-    position: absolute; bottom: 15vh; left: 0; width: 100%; height: 50%;
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
     z-index: 2; pointer-events: none; opacity: 0.45;
     background: 
         linear-gradient(to right, #b4c3d8 0%, #b4c3d8 100%) 5% 100% / 50px 250px no-repeat,
@@ -28,15 +42,17 @@ body {
         linear-gradient(to right, #cbd7e9 0%, #cbd7e9 100%) 55% 100% / 60px 140px no-repeat;
 }
 
+/* Остекление офиса и пол на переднем плане */
 .office-background .interior {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 3; pointer-events: none;
     background: 
-        linear-gradient(to bottom, transparent 60%, rgba(241, 245, 249, 0.95) 61%) 0% 0% / 100% 100% no-repeat,
-        linear-gradient(to right, rgba(203, 213, 225, 0.8) 2px, transparent 2px) repeat-x;
+        linear-gradient(to bottom, transparent 65%, rgba(241, 245, 249, 0.95) 66%) 0% 0% / 100% 100% no-repeat,
+        linear-gradient(to right, rgba(203, 213, 225, 0.6) 2px, transparent 2px) repeat-x;
     background-size: 100% 100%, 25% 100%;
 }
 
+/* Живые солнечные переливы на стекле */
 .office-background .sun-glare {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 4; pointer-events: none;
@@ -48,6 +64,7 @@ body {
 @keyframes officeGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes moveClouds { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+/* Игровой интерфейс в стиле "Матовое стекло" */
 .glass-panel {
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px) saturate(140%);
@@ -69,6 +86,7 @@ body {
 .income-rate { font-size: 13px; color: #16a34a; font-family: monospace; margin-top: 2px; font-weight: bold; }
 .news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 10; font-weight: 600; }
 
+/* Объемная 3D золотая монета */
 .coin-shadow-fix { filter: drop-shadow(0 16px 32px rgba(15, 23, 42, 0.25)) drop-shadow(0 0 40px rgba(234, 179, 8, 0.2)); perspective: 1000px; }
 .coin { 
     width: 140px; height: 140px; border-radius: 50%; 
