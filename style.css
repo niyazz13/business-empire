@@ -22,7 +22,6 @@ body {
     position: relative;
 }
 
-/* Контейнер заднего плана */
 .office-background {
     position: absolute;
     top: 0;
@@ -34,7 +33,6 @@ body {
     pointer-events: none;
 }
 
-/* Бесконечная анимация плывущих облаков */
 .office-background .clouds {
     position: absolute;
     top: 0;
@@ -48,7 +46,6 @@ body {
     animation: moveClouds 60s linear infinite;
 }
 
-/* Силуэты ночного мегаполиса */
 .office-background .city-skyline {
     position: absolute;
     bottom: 0;
@@ -63,7 +60,6 @@ body {
     background-size: 100% 100%, 100% 100%, 12px 18px;
 }
 
-/* Оконные рамы ночного офиса */
 .office-background .interior {
     position: absolute;
     top: 0;
@@ -76,7 +72,6 @@ body {
     background-size: 100% 100%, 25% 100%;
 }
 
-/* Световые блики на стеклах */
 .office-background .sun-glare {
     position: absolute;
     top: 0;
@@ -98,7 +93,6 @@ body {
     100% { transform: translateX(-50%); }
 }
 
-/* Панели под активы */
 .glass-panel {
     background: rgba(17, 24, 39, 0.85);
     backdrop-filter: blur(25px);
@@ -317,7 +311,6 @@ body {
     z-index: 5;
 }
 
-/* Биржевой сектор */
 .chart-box {
     width: 100%;
     max-width: 360px;
@@ -394,7 +387,6 @@ canvas {
     cursor: not-allowed;
 }
 
-/* Навигационная система */
 .navigation-panel {
     display: flex;
     gap: 8px;
@@ -429,7 +421,6 @@ canvas {
     display: none !important;
 }
 
-/* Элементы инвентаря */
 .asset-item {
     width: 100%;
     background: rgba(31, 41, 55, 0.4);
@@ -440,25 +431,29 @@ canvas {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
-color: #f3f4f6;
+    color: #f3f4f6;
 }
+
 .asset-name {
-font-size: 14px;
-font-weight: 700;
-text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
 }
+
 .asset-stats {
-font-size: 11px;
-color: #9ca3af;
-text-align: left;
-margin-top: 1px;
-font-family: monospace;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: left;
+    margin-top: 1px;
+    font-family: monospace;
 }
+
 .asset-cost {
-padding: 6px 12px;
-background: rgba(0, 0, 0, 0.4);
-border-radius: 4px;
-font-family: monospace;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    font-family: monospace;
+Используйте код с осторожностью.
 font-size: 12px;
 font-weight: 700;
 color: #f59e0b;
@@ -471,7 +466,6 @@ background: rgba(17, 24, 39, 0.7);
 .asset-item:disabled {
 opacity: 0.25;
 }
-/* Стили крипто-вкладок */
 .crypto-trade-row {
 display: flex;
 gap: 6px;
