@@ -43,12 +43,9 @@ function drawChart() {
     const w = canvas.width / (window.devicePixelRatio || 1);
     const h = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, w, h); ctx.beginPath(); ctx.lineWidth = 2;
-    
-    // Исправлено под светлую палитру бизнес-центра
     ctx.strokeStyle = game.currentModifier >= 1 ? '#16a34a' : '#dc2626';
     
     const step = w / (chartData.length - 1);
-    
     const minPrice = Math.min(...chartData) - 5;
     const maxPrice = Math.max(...chartData) + 5;
     const priceRange = maxPrice - minPrice;
@@ -120,7 +117,6 @@ function updateUI() {
     let actInc = game.baseIncome * game.currentModifier;
     incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     
-    // ОШИБКА ИСПРАВЛЕНА: Теперь правильно берется дефолтный ранг из массива
     let currRank = ranks[0].title;
     for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
     rankDisp.innerText = currRank;
@@ -144,12 +140,30 @@ function queueSave() {
 }
 
 function handleCoinClick(e) {
-    e.preventDefault(); game.balance += game.clickPower;
+    e.preventDefault(); 
+    game.balance += game.clickPower;
+    
     let cX = e.clientX || (e.touches && e.touches.clientX);
     let cY = e.clientY || (e.touches && e.touches.clientY);
+    
+    const coinEl = document.getElementById('mainCoin');
+    const rect = coinEl.getBoundingClientRect();
+    const coinCenterX = rect.left + rect.width / 2;
+    const coinCenterY = rect.top + rect.height / 2;
+    
     if (cX && cY) {
-        const el = document.createElement('div'); el.className = 'floating-income'; el.innerText = `+$${game.clickPower}`;
-        el.style.left = `${cX - 10}px`; el.style.top = `${cY - 20}px`; document.body.appendChild(el);
+        const tiltX = ((cY - coinCenterY) / (rect.height / 2)) * -15;
+        const tiltY = ((cX - coinCenterX) / (rect.width / 2)) * 15;
+        
+        coinEl.style.transform = `scale(0.90) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(4px)`;
+        setTimeout(() => { coinEl.style.transform = ''; }, 100);
+
+        const el = document.createElement('div'); 
+        el.className = 'floating-income'; 
+        el.innerText = `+$${game.clickPower}`;
+        el.style.left = `${cX - 10}px`; 
+        el.style.top = `${cY - 20}px`; 
+        document.body.appendChild(el);
         setTimeout(() => el.remove(), 500);
     }
     updateUI();
