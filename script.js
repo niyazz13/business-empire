@@ -311,8 +311,8 @@ function handleCoinClick(e) {
 e.preventDefault();
 game.balance += game.clickPower;
 playCoinSound();
-let cX = e.clientX || (e.touches && e.touches[0].clientX);
-let cY = e.clientY || (e.touches && e.touches[0].clientY);
+let cX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX);
+let cY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
 const coinEl = document.getElementById('mainCoin');
 if (coinEl && cX && cY) {
 const rect = coinEl.getBoundingClientRect();
