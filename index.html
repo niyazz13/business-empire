@@ -28,6 +28,12 @@
         <div class="news-ticker" id="newsTicker"></div>
     </div>
 
+    <!-- Панель переключения между бизнесом и недвижимостью -->
+    <div class="navigation-panel">
+        <button class="nav-btn active" id="navShopBtn">💼 Бизнес</button>
+        <button class="nav-btn" id="navRealEstateBtn">🏢 Недвижимость</button>
+    </div>
+
     <div class="main-workspace">
         <div class="coin-shadow-fix"><div class="coin" id="mainCoin">$</div></div>
         
@@ -43,7 +49,15 @@
         </div>
     </div>
 
-    <div class="assets-holder glass-panel"><div id="shopList"></div></div>
+    <!-- Основной контейнер магазина (Бизнес) -->
+    <div class="assets-holder glass-panel" id="businessContainer">
+        <div id="shopList"></div>
+    </div>
+
+    <!-- Новое отдельное окно: Покупка недвижимости (по умолчанию скрыто) -->
+    <div class="assets-holder glass-panel hidden" id="realEstateContainer">
+        <div id="realEstateList"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>
