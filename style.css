@@ -1,3 +1,4 @@
+/* Обнуление базовых отступов и оптимизация кликов на мобильных устройствах */
 * {
     box-sizing: border-box;
     user-select: none;
@@ -21,6 +22,7 @@ body {
     position: relative;
 }
 
+/* Контейнер заднего плана */
 .office-background {
     position: absolute;
     top: 0;
@@ -32,6 +34,7 @@ body {
     pointer-events: none;
 }
 
+/* Бесконечная анимация плывущих облаков */
 .office-background .clouds {
     position: absolute;
     top: 0;
@@ -45,6 +48,7 @@ body {
     animation: moveClouds 60s linear infinite;
 }
 
+/* Силуэты ночного мегаполиса */
 .office-background .city-skyline {
     position: absolute;
     bottom: 0;
@@ -59,6 +63,7 @@ body {
     background-size: 100% 100%, 100% 100%, 12px 18px;
 }
 
+/* Оконные рамы ночного офиса */
 .office-background .interior {
     position: absolute;
     top: 0;
@@ -71,6 +76,7 @@ body {
     background-size: 100% 100%, 25% 100%;
 }
 
+/* Световые блики на стеклах */
 .office-background .sun-glare {
     position: absolute;
     top: 0;
@@ -92,6 +98,7 @@ body {
     100% { transform: translateX(-50%); }
 }
 
+/* Панели под активы */
 .glass-panel {
     background: rgba(17, 24, 39, 0.85);
     backdrop-filter: blur(25px);
@@ -199,7 +206,7 @@ body {
     font-weight: 600;
 }
 
-/* ФОТОРЕАЛИСТИЧНЫЙ CSS 3D СЕЙФ ВМЕСТО МОНЕТЫ */
+/* ФОТОРЕАЛИСТИЧНЫЙ CSS 3D СЕЙФ */
 .coin-container {
     width: 150px;
     height: 150px;
@@ -215,7 +222,6 @@ body {
     transform-style: preserve-3d;
     cursor: pointer;
     transition: transform 0.1s ease;
-    /* Постоянный наклон рамы сейфа для глубины без вращения */
     transform: rotateX(12deg) rotateY(-14deg);
 }
 
@@ -223,14 +229,13 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 14px; /* Квадратно-закругленная бронированная дверь */
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     backface-visibility: hidden;
 }
 
-/* Тяжелое титановое покрытие лицевой панели */
 .safe-front {
     background: radial-gradient(circle at 35% 35%, #9ca3af 0%, #374151 60%, #111827 100%);
     transform: translateZ(15px);
@@ -244,7 +249,6 @@ body {
     border-radius: 14px;
 }
 
-/* Массивная стальная рама сейфа (Объемная подложка) */
 .safe-wall {
     position: absolute;
     width: 106%;
@@ -258,7 +262,6 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.8);
 }
 
-/* Декоративные заклепки по периметру бронедвери сейфа */
 .safe-rivets {
     position: absolute;
     top: 6px; left: 6px; right: 6px; bottom: 6px;
@@ -267,7 +270,6 @@ body {
     pointer-events: none;
 }
 
-/* Бронированные механические петли сейфа слева */
 .safe-hinge {
     position: absolute;
     left: -8px;
@@ -281,7 +283,6 @@ body {
 .h-top { top: 25px; }
 .h-bottom { bottom: 25px; }
 
-/* Реалистичный круглый хромированный штурвал */
 .safe-wheel-center {
     width: 55px;
     height: 55px;
@@ -293,7 +294,6 @@ body {
     transform: translateZ(10px);
 }
 
-/* Спицы штурвала (6 штук) */
 .wheel-spoke {
     position: absolute;
     width: 66px;
@@ -304,9 +304,8 @@ body {
 }
 .spoke-1 { transform: rotate(0deg); }
 .spoke-2 { transform: rotate(60deg); }
-.spoke-3 transform: rotate(120deg); }
+.spoke-3 { transform: rotate(120deg); }
 
-/* Хромированный круглый обод замка */
 .wheel-rim {
     position: absolute;
     width: 44px;
@@ -318,7 +317,7 @@ body {
     z-index: 5;
 }
 
-/* Модуль графиков */
+/* Биржевой сектор */
 .chart-box {
     width: 100%;
     max-width: 360px;
@@ -395,6 +394,7 @@ canvas {
     cursor: not-allowed;
 }
 
+/* Навигационная система */
 .navigation-panel {
     display: flex;
     gap: 8px;
@@ -429,25 +429,24 @@ canvas {
     display: none !important;
 }
 
+/* Элементы инвентаря */
 .asset-item {
     width: 100%;
     background: rgba(31, 41, 55, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-padding: 12px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 6px;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
 color: #f3f4f6;
 }
-
 .asset-name {
 font-size: 14px;
 font-weight: 700;
 text-align: left;
 }
-
 .asset-stats {
 font-size: 11px;
 color: #9ca3af;
@@ -455,7 +454,6 @@ text-align: left;
 margin-top: 1px;
 font-family: monospace;
 }
-
 .asset-cost {
 padding: 6px 12px;
 background: rgba(0, 0, 0, 0.4);
@@ -466,23 +464,20 @@ font-weight: 700;
 color: #f59e0b;
 border: 1px solid rgba(245, 158, 11, 0.15);
 }
-
 .asset-item:not(:disabled) {
 border-color: rgba(16, 185, 129, 0.2);
 background: rgba(17, 24, 39, 0.7);
 }
-
 .asset-item:disabled {
 opacity: 0.25;
 }
-
+/* Стили крипто-вкладок */
 .crypto-trade-row {
 display: flex;
 gap: 6px;
 margin-top: 8px;
 width: 100%;
 }
-
 .crypto-btn {
 flex: 1;
 padding: 8px;
@@ -494,19 +489,15 @@ text-transform: uppercase;
 cursor: pointer;
 color: white;
 }
-
 .crypto-buy-btn {
 background: #10b981;
 }
-
 .crypto-sell-btn {
 background: #ef4444;
 }
-
 .crypto-btn:disabled {
 opacity: 0.2;
 }
-
 .floating-income {
 position: absolute;
 font-size: 26px;
@@ -517,7 +508,6 @@ pointer-events: none;
 animation: floatUp 0.45s ease-out forwards;
 z-index: 100;
 }
-
 @keyframes floatUp {
 0% {
 opacity: 1;
