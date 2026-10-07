@@ -1,3 +1,4 @@
+```css
 * {
     box-sizing: border-box;
     user-select: none;
@@ -199,7 +200,6 @@ body {
     font-weight: 600;
 }
 
-/* МОДУЛЬ СЕЙФА */
 .coin-container {
     width: 140px;
     height: 140px;
@@ -297,7 +297,6 @@ body {
 }
 .spoke-1 { transform: rotate(0deg); }
 .spoke-2 { transform: rotate(60deg); }
-/* ИСПРАВЛЕНО: Добавлена пропущенная фигурная скобка объявления класса */
 .spoke-3 { transform: rotate(120deg); }
 
 .wheel-rim {
@@ -311,7 +310,6 @@ body {
     z-index: 5;
 }
 
-/* Модуль графиков биржи */
 .chart-box {
     width: 100%;
     max-width: 360px;
@@ -444,13 +442,12 @@ canvas {
 .asset-stats {
     font-size: 11px;
     color: #9ca3af;
-    text-align: left;
-    margin-top: 1px;
-    font-family: monospace;
+text-align: left;
+margin-top: 1px;
+font-family: monospace;
 }
-
 .asset-cost {
-    padding: 6px 12px;
+padding: 6px 12px;
 background: rgba(0, 0, 0, 0.4);
 border-radius: 4px;
 font-family: monospace;
