@@ -43,17 +43,23 @@ function initCanvas() { if(canvas) { const dpr = window.devicePixelRatio || 1; c
 function drawChart() {
     if (!canvas || !canvas.offsetWidth) return; const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1); ctx.clearRect(0, 0, w, h);
     const minP = Math.min(...chartData) - 3, maxP = Math.max(...chartData) + 3, range = maxP - minP, step = w / (chartData.length - 1);
-    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255, 255, 255, 0.04);'; ctx.setLineDash([4, 4]);
-    for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(0, (h / 4) * i); ctx.lineTo(w, (h / 4) * i); ctx.stroke(); } ctx.setLineDash([]);
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)'; ctx.setLineDash([]);
+    for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(0, (h / 4) * i); ctx.lineTo(w, (h / 4) * i); ctx.stroke(); }
     let points = []; for (let i = 0; i < chartData.length; i++) points.push({ x: i * step, y: h - ((chartData[i] - minP) / range) * (h - 20) - 8 });
     const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444', gradColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
-    ctx.beginPath(); ctx.moveTo(points[0].x, h); ctx.lineTo(points[0].x, points[0].y);
-    for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
-    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.lineTo(points[points.length - 1].x, h); ctx.closePath();
-    let areaGrad = ctx.createLinearGradient(0, 0, 0, h); areaGrad.addColorStop(0, gradColor); areaGrad.addColorStop(1, 'transparent'); ctx.fillStyle = areaGrad; ctx.fill();
-    ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = mainColor; ctx.shadowColor = mainColor; ctx.shadowBlur = 8; ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
-    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.stroke(); ctx.shadowBlur = 0;
+    
+    // Градиентное заполнение
+    if(points.length > 0) {
+        ctx.beginPath(); ctx.moveTo(points[0].x, h);
+        for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.lineTo(points[points.length - 1].x, h); ctx.closePath();
+        let areaGrad = ctx.createLinearGradient(0, 0, 0, h); areaGrad.addColorStop(0, gradColor); areaGrad.addColorStop(1, 'transparent'); ctx.fillStyle = areaGrad; ctx.fill();
+        
+        // Светящаяся кривая
+        ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = mainColor; ctx.shadowColor = mainColor; ctx.shadowBlur = 8; ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length - 1; i++) ctx.quadraticCurveTo(points[i].x, points[i].y, (points[i].x + points[i+1].x) / 2, (points[i].y + points[i+1].y) / 2);
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y); ctx.stroke(); ctx.shadowBlur = 0;
+    }
 }
 
 function updateChartData() {
@@ -94,7 +100,7 @@ function renderCrypto() {
 
 function updateUI() {
     if (balDisp) balDisp.innerText = formatMoney(game.balance); let actInc = game.baseIncome * game.currentModifier; if (incDisp) incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
-    let currRank = ranks[0].title; for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; } if (rankDisp) rankDisp.innerText = currRank;
+let currRank = ranks[0].title; for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; } if (rankDisp) rankDisp.innerText = currRank;
 upgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
 realEstateUpgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
 if (buyStockBtn) { buyStockBtn.disabled = game.balance < stockPrice; buyStockBtn.innerText = Купить 1 (${game.ownedStocks}); }
@@ -108,7 +114,8 @@ e.preventDefault(); game.balance += game.clickPower; playCoinSound();
 let cX = e.clientX || (e.touches && e.touches.clientX), cY = e.clientY || (e.touches && e.touches.clientY); const coinEl = document.getElementById('mainCoin'); if (!coinEl) return;
 const rect = coinEl.getBoundingClientRect(), cX_ctr = rect.left + rect.width / 2, cY_ctr = rect.top + rect.height / 2;
 if (cX && cY) {
-const tX = ((cY - cY_ctr) / (rect.height / 2)) * -15, tY = ((cX - cX_ctr) / (rect.width / 2)) * 15; coinEl.style.transform = scale(0.90) rotateX(${tX}deg) rotateY(${tY}deg) translateY(4px); setTimeout(() => { coinEl.style.transform = ''; }, 100);
+const tX = ((cY - cY_ctr) / (rect.height / 2)) * -15, tY = ((cX - cX_ctr) / (rect.width / 2)) * 15;
+coinEl.style.transform = scale(0.90) rotateX(${tX}deg) rotateY(${tY}deg) translateY(4px); setTimeout(() => { coinEl.style.transform = ''; }, 100);
 const el = document.createElement('div'); el.className = 'floating-income'; el.innerText = +$${game.clickPower}; el.style.left = ${cX - 10}px; el.style.top = ${cY - 20}px; document.body.appendChild(el); setTimeout(() => el.remove(), 500);
 } updateUI(); queueSave();
 }
