@@ -46,6 +46,15 @@ if (localStorage.getItem('biz_emp_v10')) {
     const saved = JSON.parse(localStorage.getItem('biz_emp_v10'));
     game = { ...game, ...saved.game }; inventory = { ...inventory, ...saved.inventory };
     if (saved.reInventory) reInventory = { ...reInventory, ...saved.reInventory };
+    
+    let actInc = game.baseIncome * game.currentModifier;
+    if (actInc > 0 && game.lastSaveTime) {
+        let passed = Math.floor((Date.now() - game.lastSaveTime) / 1000);
+        if (passed > 5 && saved.game) {
+            game.balance += passed * actInc;
+            setTimeout(() => alert(`Доход за время отсутствия: ${formatMoney(passed * actInc)}`), 500);
+        }
+    }
     upgrades.forEach(up => up.cost = Math.round(initialCosts[up.id] * Math.pow(up.multiplier, inventory[up.id])));
     realEstateUpgrades.forEach(up => up.cost = Math.round(initialRECosts[up.id] * Math.pow(up.multiplier, reInventory[up.id])));
 }
@@ -134,6 +143,7 @@ function updateUI() {
     let actInc = game.baseIncome * game.currentModifier;
     if (incDisp) incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     
+    // ИСПРАВЛЕНО: Безопасное получение начального ранга по индексу 0
     let currRank = ranks[0].title;
     for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
     if (rankDisp) rankDisp.innerText = currRank;
@@ -147,13 +157,11 @@ function updateUI() {
     if (sellStockBtn) sellStockBtn.disabled = game.ownedStocks <= 0;
     if (dailyBtn) dailyBtn.disabled = (Date.now() - game.lastDailyTime) <= 86400000;
 }
-
 function saveGame() { localStorage.setItem('biz_emp_v10', JSON.stringify({ game, inventory, reInventory })); }
 let saveTimeout; function queueSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 1500); }
-
 function handleCoinClick(e) {
-    e.preventDefault(); game.balance += game.clickPower;
-    playCoinSound();
+e.preventDefault(); game.balance += game.clickPower;
+playCoinSound();
 let cX = e.clientX || (e.touches && e.touches.clientX), cY = e.clientY || (e.touches && e.touches.clientY);
 const coinEl = document.getElementById('mainCoin'); if (!coinEl) return;
 const rect = coinEl.getBoundingClientRect(), cX_ctr = rect.left + rect.width / 2, cY_ctr = rect.top + rect.height / 2;
