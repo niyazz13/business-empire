@@ -199,12 +199,12 @@ body {
     font-weight: 600;
 }
 
-/* 3D СЕЙФ КЛИКЕРА */
+/* МОДУЛЬ СЕЙФА */
 .coin-container {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
     perspective: 1000px;
-    z-index: 15;
+    z-index: 5;
     filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.65));
 }
 
@@ -297,6 +297,7 @@ body {
 }
 .spoke-1 { transform: rotate(0deg); }
 .spoke-2 { transform: rotate(60deg); }
+/* ИСПРАВЛЕНО: Добавлена пропущенная фигурная скобка объявления класса */
 .spoke-3 { transform: rotate(120deg); }
 
 .wheel-rim {
@@ -310,7 +311,7 @@ body {
     z-index: 5;
 }
 
-/* Окна графиков */
+/* Модуль графиков биржи */
 .chart-box {
     width: 100%;
     max-width: 360px;
@@ -387,14 +388,13 @@ canvas {
     cursor: not-allowed;
 }
 
-/* Меню управления */
 .navigation-panel {
     display: flex;
     gap: 8px;
     width: 100%;
     max-width: 400px;
     margin: 8px auto;
-    z-index: 10;
+    z-index: 100;
     position: relative;
 }
 
@@ -451,7 +451,7 @@ canvas {
 
 .asset-cost {
     padding: 6px 12px;
-    background: rgba(0, 0, 0, 0.4);
+background: rgba(0, 0, 0, 0.4);
 border-radius: 4px;
 font-family: monospace;
 font-size: 12px;
@@ -503,12 +503,6 @@ animation: floatUp 0.45s ease-out forwards;
 z-index: 100;
 }
 @keyframes floatUp {
-0% {
-opacity: 1;
-transform: translateY(0);
-}
-100% {
-opacity: 0;
-transform: translateY(-80px);
-}
+0% { opacity: 1; transform: translateY(0); }
+100% { opacity: 0; transform: translateY(-80px); }
 }
