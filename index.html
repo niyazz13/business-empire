@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес Империя Pro: Терминал 3D</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем библиотеку Three.js для 3D графики -->
-    <script src="https://cloudflare.com"></script>
 </head>
 <body>
     <div class="office-background"><div class="clouds"></div><div class="city-skyline"></div><div class="interior"></div><div class="sun-glare"></div></div>
@@ -23,9 +21,13 @@
     </div>
     
     <div class="main-workspace">
-        <!-- Контейнер для честной 3D монеты вместо старого плоского диска -->
-        <div class="coin-shadow-fix">
-            <div id="canvas3d-container"></div>
+        <!-- Нативная 3D-сцена монеты с реальными физическими ребрами -->
+        <div class="coin-container">
+            <div class="coin-3d" id="mainCoin">
+                <div class="coin-side coin-front">$</div>
+                <div class="coin-side coin-back">$</div>
+                <div class="coin-edge"></div>
+            </div>
         </div>
         
         <div class="chart-box glass-panel">
