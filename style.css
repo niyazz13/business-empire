@@ -20,8 +20,28 @@ body { background: radial-gradient(circle at 50% 50%, #111827 0%, #030712 100%) 
 .news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 10; font-weight: 600; }
 
 /* Стили для нового 3D окна */
-.coin-shadow-fix { filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); z-index: 11; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; }
-#canvas3d-container { width: 100%; height: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* Жесткие фиксированные размеры для 3D сцены */
+.coin-shadow-fix { 
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)) drop-shadow(0 0 35px rgba(245, 158, 11, 0.15)); 
+    z-index: 11; 
+    width: 150px; 
+    height: 150px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    position: relative;
+}
+
+#canvas3d-container { 
+    width: 100% !important; 
+    height: 100% !important; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer; 
+    -webkit-tap-highlight-color: transparent; 
+}
+
 
 .chart-box { width: 100%; max-width: 360px; border-radius: 12px; padding: 10px; position: relative; background: rgba(3, 7, 12, 0.6); border: 1px solid rgba(255,255,255,0.05); }
 .chart-wrap { height: 75px; width: 100%; position: relative; margin-bottom: 8px;}
