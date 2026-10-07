@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Бизнес Империя Pro: Терминал</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://placehold.co">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header-panel">
+        <div class="top-row">
+            <div class="rank-badge" id="rankDisplay">💼 Стажер</div>
+            <button class="daily-btn" id="dailyBtn">🎁 Бонус</button>
+        </div>
+        <div class="balance" id="balanceDisplay">$0</div>
+        <div class="income-rate" id="incomeDisplay">Доход: $0/с</div>
+        <div class="news-ticker" id="newsTicker"></div>
+    </div>
+
+    <div class="main-workspace">
+        <div class="coin-shadow-fix"><div class="coin" id="mainCoin">$</div></div>
+        
+        <div class="chart-box">
+            <div class="chart-wrap">
+                <span class="chart-label" id="stockLabel">Индекс биржи: $35.00</span>
+                <canvas id="marketChart"></canvas>
+            </div>
+            <div class="trade-controls">
+                <button class="trade-btn trade-buy" id="buyStockBtn">Купить (0)</button>
+                <button class="trade-btn trade-sell" id="sellStockBtn">Продать все</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="assets-holder"><div id="shopList"></div></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
