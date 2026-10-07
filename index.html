@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
     <title>Бизнес Империя Pro: Терминал 3D</title>
-    <!-- Подключаем файл стилей (style.css) -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,7 +16,7 @@
         <div class="sun-glare"></div>
     </div>
 
-    <!-- Верхняя панель (Ранг и Бонус) -->
+    <!-- Верхняя панель -->
     <div class="top-row">
         <div id="rankDisplay" class="rank-badge">💼 Стажер</div>
         <button id="dailyBtn" class="daily-btn">🎁 Бонус</button>
@@ -25,11 +24,10 @@
 
     <!-- Главная рабочая область -->
     <div class="main-workspace">
-        <!-- Отображение баланса -->
         <div id="balanceDisplay" class="balance">$0</div>
         <div id="incomeDisplay" class="income-rate">Доход: $0/с</div>
 
-        <!-- Клик-модуль (Сейф 3D) -->
+        <!-- Клик-модуль сейфа -->
         <div class="coin-container">
             <div id="mainCoin" class="safe-3d">
                 <div class="safe-wall"></div>
@@ -54,7 +52,6 @@
                 <div id="stockLabel" class="chart-label">Индекс биржи: $35.00</div>
                 <canvas id="marketChart"></canvas>
             </div>
-            <!-- Кнопки торговли акциями -->
             <div class="trade-controls-wrapper">
                 <div class="trade-controls">
                     <button id="buyStockBtn" class="trade-btn trade-buy">Купить 1</button>
@@ -66,7 +63,7 @@
         </div>
     </div>
 
-    <!-- Контейнеры для динамических списков улучшения бизнеса (Вкладки) -->
+    <!-- Контейнер списков магазинов -->
     <div class="assets-holder glass-panel">
         <!-- 1. Коммерция -->
         <div id="businessContainer">
@@ -84,14 +81,14 @@
         </div>
     </div>
 
-    <!-- Нижняя панель переключения вкладок -->
+    <!-- Нижняя панель навигации -->
     <div class="navigation-panel">
         <button id="navShopBtn" class="nav-btn active">💼 Коммерция</button>
         <button id="navRealEstateBtn" class="nav-btn">🏢 Капитал</button>
         <button id="navCryptoBtn" class="nav-btn">🪙 Монеты</button>
     </div>
 
-    <!-- ВАЖНО: Скрипт подключается строго в самом низу, перед закрывающим тегом body -->
+    <!-- Подключение скрипта строго в конце body -->
     <script src="script.js"></script>
 </body>
 </html>
