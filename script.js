@@ -117,6 +117,7 @@ function updateUI() {
     let actInc = game.baseIncome * game.currentModifier;
     incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     
+    // Безопасный расчет дефолтного ранга
     let currRank = ranks[0].title;
     for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; }
     rankDisp.innerText = currRank;
@@ -152,6 +153,7 @@ function handleCoinClick(e) {
     const coinCenterY = rect.top + rect.height / 2;
     
     if (cX && cY) {
+        // Умная физика 3D наклона в сторону тапа
         const tiltX = ((cY - coinCenterY) / (rect.height / 2)) * -15;
         const tiltY = ((cX - coinCenterX) / (rect.width / 2)) * 15;
         
@@ -215,6 +217,5 @@ mainCoin.addEventListener('mousedown', (e) => { if ('ontouchstart' in window) re
 window.addEventListener('resize', () => { initCanvas(); drawChart(); });
 
 setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
-setInterval(updateChartData, 1000); setInterval(triggerEvent, 25000); setInterval(saveGame, 5000);
-
+etInterval(updateChartData, 1000); setInterval(triggerEvent, 25000); setInterval(saveGame, 5000);
 initCanvas(); renderShop(); updateUI(); drawChart();
