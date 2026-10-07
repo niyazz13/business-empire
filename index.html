@@ -2,50 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
     <title>Бизнес Империя Pro: Терминал 3D</title>
+    <!-- Подключаем файл стилей (style.css) -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Статичные и анимированные слои панорамы бизнес-центра -->
+
+    <!-- Задний план (Офис и город) -->
     <div class="office-background">
         <div class="clouds"></div>
         <div class="city-skyline"></div>
         <div class="interior"></div>
         <div class="sun-glare"></div>
     </div>
-    
-    <!-- Верхняя информационная панель -->
-    <div class="header-panel">
-        <div class="top-row">
-            <div class="rank-badge" id="rankDisplay">💼 Стажер</div>
-            <button class="daily-btn" id="dailyBtn">🎁 Бонус</button>
-        </div>
-        <div class="balance" id="balanceDisplay">$0</div>
-        <div class="income-rate" id="incomeDisplay">Доход: $0/с</div>
-        <div class="news-ticker" id="newsTicker"></div>
+
+    <!-- Верхняя панель (Ранг и Бонус) -->
+    <div class="top-row">
+        <div id="rankDisplay" class="rank-badge">💼 Стажер</div>
+        <button id="dailyBtn" class="daily-btn">🎁 Бонус</button>
     </div>
-    
-    <!-- Главное меню переключения инвестиционных вкладок -->
-    <div class="navigation-panel">
-    <button id="navShopBtn" class="nav-btn active">💼 Коммерция</button>
-    <button id="navRealEstateBtn" class="nav-btn">🏢 Капитал</button>
-    <button id="navCryptoBtn" class="nav-btn">🪙 Монеты</button>
-</div>
-    
-    <!-- Центральная рабочая зона -->
+
+    <!-- Главная рабочая область -->
     <div class="main-workspace">
-        <!-- Нативный объемный 3D-сейф без бесконечного вращения -->
+        <!-- Отображение баланса -->
+        <div id="balanceDisplay" class="balance">$0</div>
+        <div id="incomeDisplay" class="income-rate">Доход: $0/с</div>
+
+        <!-- Клик-модуль (Сейф 3D) -->
         <div class="coin-container">
-            <div class="safe-3d" id="mainCoin">
-                <!-- Задняя стена сейфа (объемный обод) -->
+            <div id="mainCoin" class="safe-3d">
                 <div class="safe-wall"></div>
-                <!-- Лицевая бронедверь -->
                 <div class="safe-door safe-front">
                     <div class="safe-rivets"></div>
                     <div class="safe-hinge h-top"></div>
                     <div class="safe-hinge h-bottom"></div>
-                    <!-- Трехмерный поворотный штурвал -->
                     <div class="safe-wheel-center">
                         <div class="wheel-spoke spoke-1"></div>
                         <div class="wheel-spoke spoke-2"></div>
@@ -56,37 +47,51 @@
                 <div class="safe-door safe-back"></div>
             </div>
         </div>
-        
-        <!-- Торговый терминал акций -->
-        <div class="chart-box glass-panel">
+
+        <!-- Биржевой график -->
+        <div class="chart-box">
             <div class="chart-wrap">
-                <span class="chart-label" id="stockLabel">Индекс биржи: $35.00</span>
+                <div id="stockLabel" class="chart-label">Индекс биржи: $35.00</div>
                 <canvas id="marketChart"></canvas>
             </div>
+            <!-- Кнопки торговли акциями -->
             <div class="trade-controls-wrapper">
                 <div class="trade-controls">
-                    <button class="trade-btn trade-buy" id="buyStockBtn">Купить 1</button>
-                    <button class="trade-btn trade-buy" id="buyStock10Btn">Купить 10</button>
-                    <button class="trade-btn trade-buy" id="buyStockMaxBtn">На все</button>
+                    <button id="buyStockBtn" class="trade-btn trade-buy">Купить 1</button>
+                    <button id="buyStock10Btn" class="trade-btn trade-buy">Купить 10</button>
+                    <button id="buyStockMaxBtn" class="trade-btn trade-buy">На все</button>
+                    <button id="sellStockBtn" class="trade-btn trade-sell">Продать все</button>
                 </div>
-                <button class="trade-btn trade-sell" id="sellStockBtn" style="width: 100%; margin-top: 4px;">Продать все</button>
             </div>
         </div>
     </div>
-    
-    <!-- Контейнеры списков инвестиций -->
-    <div class="assets-holder glass-panel" id="businessContainer">
-        <div id="shopList"></div>
+
+    <!-- Контейнеры для динамических списков улучшения бизнеса (Вкладки) -->
+    <div class="assets-holder glass-panel">
+        <!-- 1. Коммерция -->
+        <div id="businessContainer">
+            <div id="shopList"></div>
+        </div>
+        
+        <!-- 2. Капитал -->
+        <div id="realEstateContainer" class="hidden">
+            <div id="realEstateList"></div>
+        </div>
+        
+        <!-- 3. Монеты -->
+        <div id="cryptoContainer" class="hidden">
+            <div id="cryptoList"></div>
+        </div>
     </div>
-    
-    <div class="assets-holder glass-panel hidden" id="realEstateContainer">
-        <div id="realEstateList"></div>
+
+    <!-- Нижняя панель переключения вкладок -->
+    <div class="navigation-panel">
+        <button id="navShopBtn" class="nav-btn active">💼 Коммерция</button>
+        <button id="navRealEstateBtn" class="nav-btn">🏢 Капитал</button>
+        <button id="navCryptoBtn" class="nav-btn">🪙 Монеты</button>
     </div>
-    
-    <div class="assets-holder glass-panel hidden" id="cryptoContainer">
-        <div id="cryptoList"></div>
-    </div>
-    
+
+    <!-- ВАЖНО: Скрипт подключается строго в самом низу, перед закрывающим тегом body -->
     <script src="script.js"></script>
 </body>
 </html>
