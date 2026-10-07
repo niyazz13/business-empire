@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Статичные и анимированные слои панорамы бизнес-центра -->
     <div class="office-background">
         <div class="clouds"></div>
         <div class="city-skyline"></div>
@@ -15,7 +14,6 @@
         <div class="sun-glare"></div>
     </div>
     
-    <!-- Верхняя информационная панель -->
     <div class="header-panel">
         <div class="top-row">
             <div class="rank-badge" id="rankDisplay">💼 Стажер</div>
@@ -26,26 +24,20 @@
         <div class="news-ticker" id="newsTicker"></div>
     </div>
     
-    <!-- Главное меню переключения инвестиционных вкладок -->
     <div class="navigation-panel">
         <button class="nav-btn active" id="navShopBtn">💼 Коммерция</button>
         <button class="nav-btn" id="navRealEstateBtn">🏢 Капитал</button>
         <button class="nav-btn" id="navCryptoBtn">🪙 Монеты</button>
     </div>
     
-    <!-- Центральная рабочая зона -->
     <div class="main-workspace">
-        <!-- Нативный объемный CSS 3D-сейф -->
         <div class="coin-container">
             <div class="safe-3d" id="mainCoin">
-                <!-- Массивная стальная рама сейфа -->
                 <div class="safe-wall"></div>
-                <!-- Лицевая бронедверь -->
                 <div class="safe-door safe-front">
                     <div class="safe-rivets"></div>
                     <div class="safe-hinge h-top"></div>
                     <div class="safe-hinge h-bottom"></div>
-                    <!-- Трехмерный поворотный штурвал -->
                     <div class="safe-wheel-center">
                         <div class="wheel-spoke spoke-1"></div>
                         <div class="wheel-spoke spoke-2"></div>
@@ -57,7 +49,6 @@
             </div>
         </div>
         
-        <!-- Торговый терминал акций -->
         <div class="chart-box glass-panel">
             <div class="chart-wrap">
                 <span class="chart-label" id="stockLabel">Индекс биржи: $35.00</span>
@@ -74,7 +65,6 @@
         </div>
     </div>
     
-    <!-- Контейнеры списков инвестиций -->
     <div class="assets-holder glass-panel" id="businessContainer">
         <div id="shopList"></div>
     </div>
