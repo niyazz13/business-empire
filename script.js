@@ -40,7 +40,6 @@ if (localStorage.getItem('biz_emp_v10')) {
 const canvas = document.getElementById('marketChart'), ctx = canvas.getContext('2d'); let chartData = Array(30).fill(35);
 function initCanvas() { if(canvas) { const dpr = window.devicePixelRatio || 1; canvas.width = canvas.offsetWidth * dpr; canvas.height = canvas.offsetHeight * dpr; ctx.scale(dpr, dpr); } }
 
-// ОШИБКА ИСПРАВЛЕНА: Координаты точек теперь считываются строго через индекс массива points[0]
 function drawChart() {
     if (!canvas || !canvas.offsetWidth) return; const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1); ctx.clearRect(0, 0, w, h);
     const minP = Math.min(...chartData) - 3, maxP = Math.max(...chartData) + 3, range = maxP - minP, step = w / (chartData.length - 1);
@@ -100,7 +99,7 @@ function renderCrypto() {
 function updateUI() {
     if (balDisp) balDisp.innerText = formatMoney(game.balance); let actInc = game.baseIncome * game.currentModifier; if (incDisp) incDisp.innerText = `Доход: ${formatMoney(actInc)}/с` + (game.currentModifier !== 1 ? ` (x${game.currentModifier})` : '');
     let currRank = ranks[0].title; for(let r of ranks) { if(game.balance >= r.limit) currRank = r.title; } if (rankDisp) rankDisp.innerText = currRank;
-upgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
+    upgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
 realEstateUpgrades.forEach(up => { const btn = document.getElementById(btn-${up.id}); if (btn) btn.disabled = game.balance < up.cost; });
 if (buyStockBtn) { buyStockBtn.disabled = game.balance < stockPrice; buyStockBtn.innerText = Купить 1 (${game.ownedStocks}); }
 if (buyStock10Btn) buyStock10Btn.disabled = game.balance < (stockPrice * 10); if (buyStockMaxBtn) buyStockMaxBtn.disabled = game.balance < stockPrice;
@@ -115,8 +114,7 @@ const coinEl = document.getElementById('mainCoin');
 if (coinEl && cX && cY) {
 const rect = coinEl.getBoundingClientRect(), cX_ctr = rect.left + rect.width / 2, cY_ctr = rect.top + rect.height / 2;
 const tX = ((cY - cY_ctr) / (rect.height / 2)) * -25, tY = ((cX - cX_ctr) / (rect.width / 2)) * 25;
-// Монета физически прожимается в 3D
-coinEl.style.transform = scale(0.85) rotateX(${tX}deg) rotateY(${tY}deg);
+coinEl.style.transform = scale(0.85) rotateX(${tX}deg) rotateY(${tY}deg) translateY(4px);
 setTimeout(() => { coinEl.style.transform = ''; }, 80);
 const el = document.createElement('div'); el.className = 'floating-income'; el.innerText = +$${game.clickPower};
 el.style.left = ${cX - 10}px; el.style.top = ${cY - 20}px; document.body.appendChild(el);
@@ -133,7 +131,7 @@ navShopBtn.addEventListener('click', () => switchTab(navShopBtn, businessContain
 }
 if (buyStockBtn) buyStockBtn.addEventListener('click', () => { if (game.balance >= stockPrice) { game.balance -= stockPrice; game.ownedStocks++; updateUI(); saveGame(); } });
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', () => { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
-if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', () => { let max = Math.floor(game.balance / stockPrice); if (max > 0) { max = Math.floor(game.balance / stockPrice); game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
+if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', () => { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', () => { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
 const mainCoin = document.getElementById('mainCoin'); if (mainCoin) { mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false }); mainCoin.addEventListener('mousedown', (e) => { if ('ontouchstart' in window) return; handleCoinClick(e); }); }
 window.addEventListener('resize', () => { initCanvas(); drawChart(); }); setInterval(() => { if (game.baseIncome > 0) { game.balance += (game.baseIncome * game.currentModifier) / 10; updateUI(); } }, 100);
