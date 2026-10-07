@@ -1,0 +1,70 @@
+* { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; touch-action: manipulation; }
+body { 
+    background: linear-gradient(125deg, #090e17, #04060a, #0d1624, #030508); background-size: 400% 400%;
+    animation: nebulaShift 18s ease infinite; color: white; font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
+    height: 100vh; padding: calc(env(safe-area-inset-top) + 10px) 15px calc(env(safe-area-inset-bottom) + 10px) 15px; 
+    overflow: hidden; position: relative;
+}
+body::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(18, 28, 45, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(18, 28, 45, 0.15) 1px, transparent 1px);
+    background-size: 30px 30px; z-index: 1; pointer-events: none;
+}
+@keyframes nebulaShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.header-panel { text-align: center; width: 100%; z-index: 2; position: relative; }
+
+.top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin: 0 auto 6px auto; }
+.rank-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #d4af37; background: rgba(212, 175, 55, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.35); font-weight: 700; backdrop-filter: blur(5px); }
+.daily-btn { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #00ffcc; background: rgba(0, 255, 204, 0.1); border: 1px solid rgba(0, 255, 204, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 700; cursor: pointer; }
+.daily-btn:disabled { color: #5c6b7a; border-color: rgba(92, 107, 122, 0.2); background: transparent; }
+
+.balance { font-size: 38px; font-weight: 800; background: linear-gradient(to bottom, #ffffff 40%, #a2b4c7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+.income-rate { font-size: 13px; color: #2ecc71; font-family: monospace; margin-top: 2px; text-shadow: 0 0 10px rgba(46,204,113,0.2); }
+.news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 2; }
+
+.main-workspace { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex-grow: 1; width: 100%; z-index: 2; }
+.coin-shadow-fix { filter: drop-shadow(0 12px 25px rgba(0,0,0,0.7)) drop-shadow(0 0 35px rgba(212, 175, 55, 0.2)); }
+.coin { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff1a8 0%, #d4af37 40%, #aa8010 80%); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #fff; text-shadow: 0 3px 6px rgba(106, 80, 5, 0.8); transition: transform 0.05s ease; cursor: pointer; border: 3px solid #aa8010; -webkit-tap-highlight-color: transparent; }
+.coin:active { transform: scale(0.92); }
+
+.chart-box { width: 100%; max-width: 360px; background: rgba(5, 8, 15, 0.6); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 8px; position: relative; backdrop-filter: blur(10px); }
+.chart-wrap { height: 65px; width: 100%; position: relative; margin-bottom: 6px;}
+.chart-label { position: absolute; top: 0; left: 4px; font-size: 9px; color: #5c6b7a; text-transform: uppercase; letter-spacing: 1px; }
+canvas { width: 100%; height: 100%; display: block; }
+
+.trade-controls { display: flex; gap: 8px; width: 100%; }
+.trade-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: white; cursor: pointer; }
+.trade-buy { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }
+.trade-sell { background: rgba(255, 71, 87, 0.2); border: 1px solid #ff4757; color: #ff4757; }
+.trade-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.floating-income { position: absolute; font-size: 24px; font-weight: 800; color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.6), 0 2px 4px rgba(0,0,0,0.5); pointer-events: none; animation: floatUp 0.5s ease-out forwards; z-index: 3; }
+@keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-90px); } }
+
+.assets-holder { width: 100%; max-width: 400px; background: rgba(10, 15, 26, 0.75); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 12px; max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 2; backdrop-filter: blur(15px); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+.asset-item { width: 100%; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: white; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.asset-item:last-child { margin-bottom: 0; }
+.asset-content { display: flex; align-items: center; gap: 12px; }
+
+.icon-wrapper { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.ico-click { width: 14px; height: 14px; border: 2px solid #5c6b7a; border-radius: 50%; }
+.ico-startup { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 16px solid #5c6b7a; }
+.ico-retail { width: 14px; height: 14px; border: 2px solid #5c6b7a; transform: rotate(45deg); }
+.ico-oil { width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 15px solid transparent; border-bottom-color: #5c6b7a; }
+.ico-it { width: 12px; height: 12px; background: #5c6b7a; border-radius: 3px; }
+
+.asset-name { font-size: 14px; font-weight: 600; text-align: left; }
+.asset-stats { font-size: 11px; color: #5c6b7a; text-align: left; margin-top: 2px; }
+.asset-cost { padding: 5px 10px; background: rgba(0, 0, 0, 0.4); border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: 700; color: #d4af37; border: 1px solid rgba(212,175,55,0.1); }
+
+.asset-item:not(:disabled) { border-color: rgba(46, 204, 113, 0.25); background: rgba(46, 204, 113, 0.03); }
+.asset-item:not(:disabled) .icon-wrapper { border-color: rgba(46, 204, 113, 0.6); background: rgba(46, 204, 113, 0.1); animation: glowPulse 2s infinite ease-in-out; }
+.asset-item:not(:disabled) .ico-click { border-color: #00ffcc; }
+.asset-item:not(:disabled) .ico-startup { border-bottom-color: #38ef7d; }
+.asset-item:not(:disabled) .ico-retail { border-color: #00c6ff; }
+.asset-item:not(:disabled) .ico-oil { border-bottom-color: #ff9f43; }
+.asset-item:not(:disabled) .ico-it { background: #a55eea; }
+.asset-item:disabled { opacity: 0.25; cursor: not-allowed; }
+
+@keyframes glowPulse { 0% { box-shadow: 0 0 2px rgba(46, 204, 113, 0.2); } 50% { box-shadow: 0 0 12px rgba(46, 204, 113, 0.5); transform: scale(1.04); } 100% { box-shadow: 0 0 2px rgba(46, 204, 113, 0.2); } }
