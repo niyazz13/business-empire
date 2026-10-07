@@ -9,7 +9,6 @@ body {
     overflow: hidden; position: relative;
 }
 
-/* Фикс отображения: контейнер жестко развернут под игровым интерфейсом */
 .office-background {
     position: absolute;
     top: 0;
@@ -21,7 +20,6 @@ body {
     pointer-events: none;
 }
 
-/* Медленно плывущие облака в небе */
 .office-background .clouds {
     position: absolute; top: 0; left: 0; width: 200%; height: 40%;
     background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.8) 0%, transparent 25%),
@@ -30,7 +28,6 @@ body {
     animation: moveClouds 60s linear infinite;
 }
 
-/* Силуэты небоскребов мегаполиса на горизонте */
 .office-background .city-skyline {
     position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
     z-index: 2; pointer-events: none; opacity: 0.45;
@@ -42,7 +39,6 @@ body {
         linear-gradient(to right, #cbd7e9 0%, #cbd7e9 100%) 55% 100% / 60px 140px no-repeat;
 }
 
-/* Остекление офиса и пол на переднем плане */
 .office-background .interior {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 3; pointer-events: none;
@@ -52,7 +48,6 @@ body {
     background-size: 100% 100%, 25% 100%;
 }
 
-/* Живые солнечные переливы на стекле */
 .office-background .sun-glare {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 4; pointer-events: none;
@@ -64,7 +59,6 @@ body {
 @keyframes officeGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes moveClouds { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* Игровой интерфейс в стиле "Матовое стекло" */
 .glass-panel {
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px) saturate(140%);
@@ -86,7 +80,6 @@ body {
 .income-rate { font-size: 13px; color: #16a34a; font-family: monospace; margin-top: 2px; font-weight: bold; }
 .news-ticker { width: 100%; max-width: 400px; padding: 8px 12px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 8px; display: none; z-index: 10; font-weight: 600; }
 
-/* Объемная 3D золотая монета */
 .coin-shadow-fix { filter: drop-shadow(0 16px 32px rgba(15, 23, 42, 0.25)) drop-shadow(0 0 40px rgba(234, 179, 8, 0.2)); perspective: 1000px; }
 .coin { 
     width: 140px; height: 140px; border-radius: 50%; 
@@ -139,52 +132,19 @@ canvas { width: 100%; height: 100%; display: block; }
 .asset-item:disabled { opacity: 0.35; cursor: not-allowed; }
 
 @keyframes glowPulse { 0% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } 50% { box-shadow: 0 0 10px rgba(22, 163, 74, 0.2); transform: scale(1.04); } 100% { box-shadow: 0 0 2px rgba(22, 163, 74, 0.1); } }
-/* Панель переключения разделов */
-.navigation-panel {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin: 8px auto;
-    z-index: 10;
-    position: relative;
-}
 
-.nav-btn {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.45);
-    color: #475569;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-}
-
-.nav-btn.active {
-    background: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
-}
-
-/* Скрытие окон */
-.hidden {
-    display: none !important;
-}
-
+/* Навигация и переключение разделов */
+.navigation-panel { display: flex; gap: 10px; width: 100%; max-width: 400px; margin: 8px auto; z-index: 10; position: relative; }
+.nav-btn { flex: 1; padding: 10px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 12px; background: rgba(255, 255, 255, 0.45); color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(10px); }
+.nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); }
+.hidden { display: none !important; }
 /* Кастомные стили иконок для недвижимости */
 .ico-flat { width: 14px; height: 14px; background: #64748b; border-radius: 2px; position: relative; }
 .ico-flat::before { content: ""; position: absolute; top: -4px; left: 0; width: 14px; height: 4px; background: #64748b; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-.ico-office-floor { width: 12px; height: 16px; border: 2px solid #64748b; border-bottom: none; }
+.ico-floor { width: 12px; height: 16px; border: 2px solid #64748b; border-bottom: none; }
 .ico-hotel { width: 16px; height: 16px; background: #64748b; border-radius: 4px 4px 0 0; }
-.ico-skyscraper { width: 10px; height: 20px; background: #64748b; box-shadow: -4px 4px 0 -2px #64748b, 4px 4px 0 -2px #64748b; }
-
-.asset-item:not(:disabled) .ico-flat,
-.asset-item:not(:disabled) .ico-flat::before { background: #0ea5e9; }
-.asset-item:not(:disabled) .ico-office-floor { border-color: #f59e0b; }
+.ico-sky { width: 10px; height: 20px; background: #64748b; box-shadow: -4px 4px 0 -2px #64748b, 4px 4px 0 -2px #64748b; }
+.asset-item:not(:disabled) .ico-flat, .asset-item:not(:disabled) .ico-flat::before { background: #0ea5e9; }
+.asset-item:not(:disabled) .ico-floor { border-color: #f59e0b; }
 .asset-item:not(:disabled) .ico-hotel { background: #10b981; }
-.asset-item:not(:disabled) .ico-skyscraper { background: #6366f1; box-shadow: -4px 4px 0 -2px #6366f1, 4px 4px 0 -2px #6366f1; }
+.asset-item:not(:disabled) .ico-sky { background: #6366f1; box-shadow: -4px 4px 0 -2px #6366f1, 4px 4px 0 -2px #6366f1; }
