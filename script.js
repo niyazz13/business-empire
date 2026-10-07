@@ -2,7 +2,6 @@
 // 1. КОНСТАНТЫ ЭКОНОМИКИ И СТАРТОВЫЕ НАСТРОЙКИ
 // =========================================================================
 
-// Начальные стоимости для расчета экспоненциального роста цен
 const initialCosts = { 
     click: 15, 
     startup: 60, 
@@ -18,7 +17,6 @@ const initialRECosts = {
     re_sky: 650000 
 };
 
-// Главные объекты игрового прогресса, инвентаря и котировок
 let game = { 
     balance: 0, 
     clickPower: 1, 
@@ -49,7 +47,6 @@ function playCoinSound() {
         const gain = ctxAudio.createGain();
         
         osc.type = 'sine';
-        // Тяжелый двухтональный металлический клик сейфа
         osc.frequency.setValueAtTime(987.77, ctxAudio.currentTime);
         osc.frequency.setValueAtTime(1318.51, ctxAudio.currentTime + 0.08);
         
@@ -92,7 +89,6 @@ const ranks = [
     { limit: 10000000, title: "👑 Магнат" }
 ];
 
-// Форматирование длинных чисел в буквенные суффиксы (К, М, Б)
 function formatMoney(n) {
     if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + ' Б';
     if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + ' М';
@@ -129,7 +125,6 @@ function drawChart() {
     const range = maxP - minP;
     const step = w / (chartData.length - 1);
     
-    // Сетка подложки тренда
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
     ctx.beginPath();
@@ -150,7 +145,6 @@ function drawChart() {
     const mainColor = game.currentModifier >= 1 ? '#10b981' : '#ef4444';
     const gradColor = game.currentModifier >= 1 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
     
-    // СТРОГИЙ ФИКС: Обращение к координатам идет строго через валидный индекс [0]
     if (points.length > 0 && points[0]) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, h);
@@ -200,7 +194,6 @@ window.addEventListener('DOMContentLoaded', function() {
     const sellStockBtn = document.getElementById('sellStockBtn');
     const dailyBtn = document.getElementById('dailyBtn');
 
-    // Безопасное чтение файлов сохранений прогресса
     if (localStorage.getItem('biz_emp_v10')) {
         const saved = JSON.parse(localStorage.getItem('biz_emp_v10'));
         game = { ...game, ...saved.game };
@@ -243,15 +236,16 @@ window.addEventListener('DOMContentLoaded', function() {
             const btn = document.createElement('button');
             btn.className = 'asset-item';
             btn.id = "btn-" + up.id;
-btn.innerHTML = <div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Владеете: ${reInventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>;
-btn.addEventListener('click', function(e) {
-e.stopPropagation();
-buyRealEstate(up);
-});
-realEstateList.appendChild(btn);
-});
-}
-function renderCrypto() {
+            btn.innerHTML = `<div class="asset-content"><div><div class="asset-name">${up.name}</div><div class="asset-stats">${up.desc} | Владеете: ${reInventory[up.id]}</div></div></div><div class="asset-cost">${formatMoney(up.cost)}</div>`;
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                buyRealEstate(up);
+            });
+            realEstateList.appendChild(btn);
+        });
+    }
+
+    function renderCrypto() {
 if (!cryptoList) return;
 cryptoList.innerHTML = <div class="asset-item" style="flex-direction:column; align-items:flex-start; gap:4px;"><div style="display:flex; justify-content:space-between; width:100%; align-items:center;"><div class="asset-content"><div><div class="asset-name">Bitcoin (BTC)</div><div class="asset-stats">В наличии: ${(game.cryptoBtc || 0).toFixed(4)} BTC</div></div></div><div class="asset-cost" style="color:#f59e0b;">$${btcPrice.toFixed(2)}</div></div><div class="crypto-trade-row"><button class="crypto-btn crypto-buy-btn" id="buyBtcBtn" ${game.balance < btcPrice ? 'disabled' : ''}>Купить 1 BTC</button><button class="crypto-btn crypto-sell-btn" id="sellBtcBtn" ${(!game.cryptoBtc || game.cryptoBtc < 1) ? 'disabled' : ''}>Продать 1 BTC</button></div></div>;
 const bBtn = document.getElementById('buyBtcBtn');
@@ -279,7 +273,7 @@ function updateUI() {
 if (balDisp) balDisp.innerText = formatMoney(game.balance);
 let actInc = game.baseIncome * game.currentModifier;
 if (incDisp) {
-incDisp.innerText = Доход: ${formatMoney(actInc)}/с + (game.currentModifier !== 1 ?  (x${game.currentModifier}) : '');
+incDisp.innerText = Доход: ${formatMoney(actInc)}/с  + (game.currentModifier !== 1 ? (x${game.currentModifier}) : '');
 }
 let currRank = "💼 Стажер";
 for (let i = 0; i < ranks.length; i++) {
@@ -317,8 +311,8 @@ function handleCoinClick(e) {
 e.preventDefault();
 game.balance += game.clickPower;
 playCoinSound();
-let cX = e.clientX || (e.touches && e.touches.clientX);
-let cY = e.clientY || (e.touches && e.touches.clientY);
+let cX = e.clientX || (e.touches && e.touches[0].clientX);
+let cY = e.clientY || (e.touches && e.touches[0].clientY);
 const coinEl = document.getElementById('mainCoin');
 if (coinEl && cX && cY) {
 const rect = coinEl.getBoundingClientRect();
@@ -335,7 +329,6 @@ el.className = 'floating-income';
 el.innerText = +$${game.clickPower};
 el.style.left = ${cX - 10}px;
 el.style.top = ${cY - 20}px;
-// Надежное удаление ноды по завершении CSS-анимации (Защита от утечки RAM)
 el.addEventListener('animationend', function() { el.remove(); });
 document.body.appendChild(el);
 }
@@ -364,7 +357,6 @@ asset.cost = Math.round(initialRECosts[asset.id] * Math.pow(asset.multiplier, re
 renderRealEstate(); updateUI(); saveGame();
 }
 }
-// Подключение вкладок навигации
 const navShopBtn = document.getElementById('navShopBtn');
 const navRealEstateBtn = document.getElementById('navRealEstateBtn');
 const navCryptoBtn = document.getElementById('navCryptoBtn');
@@ -376,18 +368,16 @@ function switchTab(activeBtn, activeContainer) {
 [navShopBtn, navRealEstateBtn, navCryptoBtn].forEach(function(b) { b.classList.remove('active'); });
 [businessContainer, realEstateContainer, cryptoContainer].forEach(function(c) { if (c) c.classList.add('hidden'); });
 activeBtn.classList.add('active');
-activeContainer.classList.remove('hidden');
+if (activeContainer) activeContainer.classList.remove('hidden');
 }
 navShopBtn.addEventListener('click', function() { switchTab(navShopBtn, businessContainer); });
 navRealEstateBtn.addEventListener('click', function() { switchTab(navRealEstateBtn, realEstateContainer); });
 navCryptoBtn.addEventListener('click', function() { switchTab(navCryptoBtn, cryptoContainer); });
 }
-// Слушатели кнопок закупки акций
 if (buyStockBtn) buyStockBtn.addEventListener('click', function() { if (game.balance >= stockPrice) { game.balance -= stockPrice; game.ownedStocks++; updateUI(); saveGame(); } });
 if (buyStock10Btn) buyStock10Btn.addEventListener('click', function() { if (game.balance >= (stockPrice * 10)) { game.balance -= (stockPrice * 10); game.ownedStocks += 10; updateUI(); saveGame(); } });
 if (buyStockMaxBtn) buyStockMaxBtn.addEventListener('click', function() { let max = Math.floor(game.balance / stockPrice); if (max > 0) { game.balance -= (max * stockPrice); game.ownedStocks += max; updateUI(); saveGame(); } });
 if (sellStockBtn) sellStockBtn.addEventListener('click', function() { if (game.ownedStocks > 0) { game.balance += game.ownedStocks * stockPrice; game.ownedStocks = 0; updateUI(); saveGame(); } });
-// Подключение событий на 3D сейф
 const mainCoin = document.getElementById('mainCoin');
 if (mainCoin) {
 mainCoin.addEventListener('touchstart', handleCoinClick, { passive: false });
@@ -412,7 +402,6 @@ drawChart(); updateUI(); renderCrypto();
 window.addEventListener('resize', function() {
 initCanvas(); drawChart();
 });
-// Игровые интервалы пассивного дохода и обновления биржи
 setInterval(function() {
 if (game.baseIncome > 0) {
 game.balance += (game.baseIncome * game.currentModifier) / 10;
