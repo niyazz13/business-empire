@@ -1,4 +1,3 @@
-/* Обнуление базовых отступов и оптимизация кликов на мобильных устройствах */
 * {
     box-sizing: border-box;
     user-select: none;
@@ -200,7 +199,7 @@ body {
     font-weight: 600;
 }
 
-/* ФОТОРЕАЛИСТИЧНЫЙ CSS 3D СЕЙФ */
+/* 3D СЕЙФ ВМЕСТО МОНЕТЫ */
 .coin-container {
     width: 150px;
     height: 150px;
@@ -453,19 +452,21 @@ canvas {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 4px;
     font-family: monospace;
-Используйте код с осторожностью.
-font-size: 12px;
+ont-size: 12px;
 font-weight: 700;
 color: #f59e0b;
 border: 1px solid rgba(245, 158, 11, 0.15);
 }
+
 .asset-item:not(:disabled) {
 border-color: rgba(16, 185, 129, 0.2);
 background: rgba(17, 24, 39, 0.7);
 }
+
 .asset-item:disabled {
 opacity: 0.25;
 }
+
 .crypto-trade-row {
 display: flex;
 gap: 6px;
@@ -483,15 +484,19 @@ text-transform: uppercase;
 cursor: pointer;
 color: white;
 }
+
 .crypto-buy-btn {
 background: #10b981;
 }
+
 .crypto-sell-btn {
 background: #ef4444;
 }
+
 .crypto-btn:disabled {
 opacity: 0.2;
 }
+
 .floating-income {
 position: absolute;
 font-size: 26px;
@@ -502,6 +507,7 @@ pointer-events: none;
 animation: floatUp 0.45s ease-out forwards;
 z-index: 100;
 }
+
 @keyframes floatUp {
 0% {
 opacity: 1;
