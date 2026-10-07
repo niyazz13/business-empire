@@ -7,20 +7,35 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="office-background"><div class="clouds"></div><div class="city-skyline"></div><div class="interior"></div><div class="sun-glare"></div></div>
-    
-    <div class="header-panel">
-        <div class="top-row"><div class="rank-badge" id="rankDisplay">💼 Стажер</div><button class="daily-btn" id="dailyBtn">🎁 Бонус</button></div>
-        <div class="balance" id="balanceDisplay">$0</div><div class="income-rate" id="incomeDisplay">Доход: $0/с</div><div class="news-ticker" id="newsTicker"></div>
+    <!-- Статичные и анимированные слои панорамы бизнес-центра -->
+    <div class="office-background">
+        <div class="clouds"></div>
+        <div class="city-skyline"></div>
+        <div class="interior"></div>
+        <div class="sun-glare"></div>
     </div>
     
+    <!-- Верхняя информационная панель -->
+    <div class="header-panel">
+        <div class="top-row">
+            <div class="rank-badge" id="rankDisplay">💼 Стажер</div>
+            <button class="daily-btn" id="dailyBtn">🎁 Бонус</button>
+        </div>
+        <div class="balance" id="balanceDisplay">$0</div>
+        <div class="income-rate" id="incomeDisplay">Доход: $0/с</div>
+        <div class="news-ticker" id="newsTicker"></div>
+    </div>
+    
+    <!-- Главное меню переключения инвестиционных вкладок -->
     <div class="navigation-panel">
         <button class="nav-btn active" id="navShopBtn">💼 Коммерция</button>
         <button class="nav-btn" id="navRealEstateBtn">🏢 Капитал</button>
         <button class="nav-btn" id="navCryptoBtn">🪙 Монеты</button>
     </div>
     
+    <!-- Центральная рабочая зона -->
     <div class="main-workspace">
+        <!-- Нативный объемный CSS 3D-кликер -->
         <div class="coin-container">
             <div class="coin-3d" id="mainCoin">
                 <div class="coin-side coin-front">$</div>
@@ -29,22 +44,35 @@
             </div>
         </div>
         
+        <!-- Торговый терминал акций -->
         <div class="chart-box glass-panel">
-            <div class="chart-wrap"><span class="chart-label" id="stockLabel">Индекс биржи: $35.00</span><canvas id="marketChart"></canvas></div>
+            <div class="chart-wrap">
+                <span class="chart-label" id="stockLabel">Индекс биржи: $35.00</span>
+                <canvas id="marketChart"></canvas>
+            </div>
             <div class="trade-controls-wrapper">
                 <div class="trade-controls">
                     <button class="trade-btn trade-buy" id="buyStockBtn">Купить 1</button>
                     <button class="trade-btn trade-buy" id="buyStock10Btn">Купить 10</button>
                     <button class="trade-btn trade-buy" id="buyStockMaxBtn">На все</button>
                 </div>
-                <button class="trade-btn trade-sell" id="sellStockBtn" style="width:100%; margin-top:4px;">Продать все</button>
+                <button class="trade-btn trade-sell" id="sellStockBtn" style="width: 100%; margin-top: 4px;">Продать все</button>
             </div>
         </div>
     </div>
     
-    <div class="assets-holder glass-panel" id="businessContainer"><div id="shopList"></div></div>
-    <div class="assets-holder glass-panel hidden" id="realEstateContainer"><div id="realEstateList"></div></div>
-    <div class="assets-holder glass-panel hidden" id="cryptoContainer"><div id="cryptoList"></div></div>
+    <!-- Контейнеры списков инвестиций (Магазины) -->
+    <div class="assets-holder glass-panel" id="businessContainer">
+        <div id="shopList"></div>
+    </div>
+    
+    <div class="assets-holder glass-panel hidden" id="realEstateContainer">
+        <div id="realEstateList"></div>
+    </div>
+    
+    <div class="assets-holder glass-panel hidden" id="cryptoContainer">
+        <div id="cryptoList"></div>
+    </div>
     
     <script src="script.js"></script>
 </body>
